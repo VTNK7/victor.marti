@@ -31,7 +31,7 @@
 @media (max-width: 599px) {
   :root {
     --colonnes: 6; --goutiere: 16px; --marge: 16px;
-    --e1: 4px; --e2: 6px; --e3: 16px; --e5: 32px; --e6: 48px; --e7: 64px; --e8: 72px; --e9: 108px; --e10: 108px;
+    --e1: 4px; --e2: 6px; --e3: 16px; --e5: 32px; --e6: 48px; --e7: 64px; --e8: 64px; --e9: 72px; --e10: 108px;
     --interligne: 19px; --t-corps: 15px; --t-titre-s: 19px; --t-titre: 22px; --t-display: 28px;
   }
 }
@@ -206,21 +206,32 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
 /* ===== Versions de texte : longue sur grand écran, courte sur mobile ===== */
 .court { display: none; }
 
-/* Bouton de rendez-vous flottant, en bas au centre : mobile seulement */
-.rdv-flottant { display: none; }
+/* Barre du bas (sommaire + rendez-vous) et boutons de contact : mobile seulement */
+.barre-mobile, .contact-mobile { display: none; }
 
 /* ===== Mobile ===== */
 @media (max-width: 640px) {
-  main { padding-top: var(--e7); padding-bottom: 96px; }  /* place pour le bouton flottant */
+  :root { --texte-discret: #555555; }
+  main { padding-top: var(--e7); padding-bottom: 112px; }  /* place pour la barre du bas */
 
-  /* Texte court, actions regroupées dans le bouton flottant */
+  /* Texte court */
   .long { display: none; }
   .court { display: inline; }
-  .hero .actions, .contact .actions { display: none; }
-  .rdv-flottant {
-    display: inline-flex; position: fixed; z-index: 3; left: 50%; transform: translateX(-50%);
-    bottom: calc(16px + env(safe-area-inset-bottom)); height: 40px; padding: 0 20px; white-space: nowrap;
+
+  /* Zones tactiles d'au moins 44 px */
+  .bouton { height: 44px; min-width: 44px; padding: 0 16px; }
+  .copier-cv { display: none; }  /* son info-bulle n'existe qu'au survol */
+
+  /* Barre du bas : apparaît après le hero, se cache quand on descend, revient quand on remonte */
+  .barre-mobile {
+    display: flex; justify-content: center; gap: 6px; position: fixed; z-index: 3; inset-inline: 0; bottom: 0;
+    padding: 24px var(--marge) calc(16px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--fond) 60%, transparent);
+    transform: translateY(100%); visibility: hidden; transition: transform .25s ease, visibility 0s .25s;
   }
+  .barre-mobile.visible { transform: none; visibility: visible; transition: transform .25s ease; }
+  .barre-mobile .bouton { padding: 0 12px; }
+  @media (prefers-reduced-motion: reduce) { .barre-mobile, .barre-mobile.visible { transition: none; } }
 
   /* Certifications : code + nom, sans points de conduite */
   .coin { margin-top: var(--e5); }
@@ -241,11 +252,12 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
   .chiffres li { gap: 4px; }
   .chiffres .valeur { font-size: 22px; white-space: nowrap; }
   .chiffres .valeur small { font-size: 13px; }
-  .chiffres .libelle { font-size: 11px; }
 
+  /* Contact : gros boutons à la place des liens, le rendez-vous est dans la barre du bas */
   .mail { font-size: 20px; }
-  .mail .indice { display: none; }
+  .mail .indice, .coordonnees a, .contact .actions:not(.contact-mobile) { display: none; }
+  .contact-mobile { display: flex; }
   footer { flex-direction: column; gap: 4px; }
 }
 
-@media print { #ascii, .sommaire, .rdv-flottant { display: none; } }
+@media print { #ascii, .sommaire, .barre-mobile { display: none; } }

@@ -21,12 +21,14 @@ document.querySelectorAll('.copier-cv').forEach(bouton => {
   }));
 });
 
-/* Clic sur l'e-mail : copie l'adresse au lieu d'ouvrir le client mail (repli sur mailto si la copie échoue). */
+/* Clic sur l'e-mail : copie l'adresse au lieu d'ouvrir le client mail (repli sur mailto si la copie échoue).
+   Sur écran tactile, on laisse le mailto ouvrir l'appli mail. */
+const tactile = matchMedia('(pointer: coarse)');
 document.querySelectorAll('[data-copier]').forEach(lien => {
   const indice = lien.querySelector('.indice');
   const initial = indice.textContent;
   lien.addEventListener('click', async e => {
-    if (!navigator.clipboard) return;
+    if (!navigator.clipboard || tactile.matches) return;
     e.preventDefault();
     const ok = await copierAvecRetour(lien, lien.dataset.copier, {
       afficher: t => { indice.textContent = t; },
@@ -73,6 +75,23 @@ document.querySelectorAll('[data-rdv]').forEach(lien => {
   });
 })();
 
+/* Barre du bas (mobile) : visible une fois le hero dépassé, quand on remonte ou en fin de page. */
+(function barreMobile() {
+  const barre = document.querySelector('.barre-mobile');
+  const hero = document.querySelector('.hero');
+  const SEUIL = 8; /* px de défilement avant de changer de sens, pour éviter le clignotement */
+  let dernierY = scrollY, monte = false;
+  function maj() {
+    const y = scrollY;
+    if (Math.abs(y - dernierY) > SEUIL) { monte = y < dernierY; dernierY = y; }
+    const apresHero = hero.getBoundingClientRect().bottom < 0;
+    const enBas = innerHeight + y >= document.documentElement.scrollHeight - 160;
+    barre.classList.toggle('visible', apresHero && (monte || enBas));
+  }
+  addEventListener('scroll', maj, { passive: true });
+  maj();
+})();
+
 /* Fond ASCII : des signaux superposés qui ondulent lentement, comme des séries de métriques.
    La vague couvre tout l'écran ; ce sont les halos des blocs (CSS) qui dégagent le contenu. */
 (function fondAscii() {
@@ -109,9 +128,11 @@ document.querySelectorAll('[data-rdv]').forEach(lien => {
   addEventListener('resize', () => { mesurer(); dessiner(performance.now() / 1000); });
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+  /* Sur mobile, le fond reste figé pour ménager la batterie. */
+  const mobile = matchMedia('(max-width: 640px)');
   let dernier = 0;
   requestAnimationFrame(function boucle(ms) {
-    if (ms - dernier >= INTERVALLE) { dernier = ms; dessiner(ms / 1000); }
+    if (!mobile.matches && ms - dernier >= INTERVALLE) { dernier = ms; dessiner(ms / 1000); }
     requestAnimationFrame(boucle);
   });
 })();
