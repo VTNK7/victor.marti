@@ -1,0 +1,251 @@
+/* ===== Jetons (DA inspirée de paradigm.xyz : serif + semi-mono, noir sur blanc, pastilles grises carrées) ===== */
+:root {
+  --fond: #FFFFFF;
+  --couche: rgba(224, 224, 224, .6);  /* pastilles : boutons, tags */
+  --couche-survol: #DDDDDD;
+  --texte: #000000;
+  --texte-discret: #666666;           /* légendes, libellés */
+  --accent: #4200FF;                  /* seule couleur : action principale */
+  --trait: rgba(0, 0, 0, .08);        /* séparateurs, graduations */
+  --serif: Newsreader, Georgia, 'Times New Roman', serif;
+  --mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Échelle d'espacement (desktop ≥ 1024 px) */
+  --e1: 8px;  --e2: 16px; --e3: 24px; --e4: 36px; --e5: 48px;
+  --e6: 64px; --e7: 72px; --e8: 108px; --e9: 172px; --e10: 216px;
+  --entete-h: 68px;                  /* hauteur réservée en haut, comme la barre de Paradigm */
+  --interligne: 20px;                 /* saut entre paragraphes = une ligne */
+
+  /* Grille : 12 colonnes, gouttière = marge */
+  --colonnes: 12; --goutiere: 24px; --marge: 24px;
+
+  /* Tailles de texte */
+  --t-petit: 12px; --t-corps: 16px; --t-titre-s: 21px; --t-titre: 28px; --t-display: 38px;
+  --serre: -.03em;                    /* tracking des titres serif */
+  --mono-ls: .02em;                   /* tracking du semi-mono */
+}
+@media (min-width: 1360px) { :root { --goutiere: 36px; --marge: 36px; } }
+@media (max-width: 1023px) {
+  :root { --colonnes: 8; --e7: 56px; --e8: 96px; --e9: 140px; --e10: 140px; --t-titre: 24px; --t-display: 34px; }
+}
+@media (max-width: 599px) {
+  :root {
+    --colonnes: 6; --goutiere: 16px; --marge: 16px;
+    --e1: 4px; --e2: 6px; --e3: 16px; --e5: 32px; --e6: 48px; --e7: 64px; --e8: 72px; --e9: 108px; --e10: 108px;
+    --interligne: 19px; --t-corps: 15px; --t-titre-s: 19px; --t-titre: 22px; --t-display: 28px;
+  }
+}
+
+/* ===== Base ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-padding-top: var(--e5); }
+body { background: var(--fond); color: var(--texte); font: 400 var(--t-corps)/1.25 var(--serif); font-optical-sizing: auto; }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+::selection { background: var(--texte); color: var(--fond); }
+:focus-visible { outline: 2px solid #CCCCCC; outline-offset: 2px; }
+
+/* ===== Fond ASCII ===== */
+#ascii {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  font: 400 12px/14px var(--mono); color: rgba(0, 0, 0, .09); white-space: pre;
+}
+
+/* ===== Halo : derrière chaque bloc, un fond qui se fond dans l'ASCII =====
+   Pseudo-élément placé sous le contenu (z-index -1), pour ne jamais recouvrir un bloc voisin.
+   Il respire (seul transform est animé, donc le GPU travaille) ; chaque bloc a son rythme
+   via --respire-duree / --respire-delai pour que les bords ne bougent pas ensemble. */
+.halo { position: relative; }
+.halo::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: var(--fond); box-shadow: 0 0 48px 32px var(--fond);
+  animation: respire var(--respire-duree, 11s) ease-in-out var(--respire-delai, 0s) infinite;
+  will-change: transform;
+}
+@keyframes respire {
+  0%, 100% { transform: translate(0, 0) scale(1, 1); }
+  33%      { transform: translate(10px, -6px) scale(1.03, 1.08); }
+  66%      { transform: translate(-8px, 5px) scale(1.02, 1.04); }
+}
+.coin                        { --respire-duree: 13s; --respire-delai: -4s; }
+#missions .entete            { --respire-duree: 9s;  --respire-delai: -2s; }
+.span:nth-child(2)           { --respire-delai: -3s; }
+.span:nth-child(3)           { --respire-duree: 12s; --respire-delai: -7s; }
+.bloc-ia                     { --respire-duree: 14s; --respire-delai: -6s; }
+#contact .entete, .contact   { --respire-delai: -5s; }
+.sommaire ol                 { --respire-duree: 10s; --respire-delai: -1s; }
+@media (prefers-reduced-motion: reduce) { .halo::before { animation: none; } }
+
+/* ===== Sommaire numéroté, fixe en haut à droite ===== */
+.sommaire {
+  position: fixed; z-index: 2; top: 19px; inset-inline: var(--marge); pointer-events: none;
+  display: grid; grid-template-columns: repeat(var(--colonnes), minmax(0, 1fr)); column-gap: var(--goutiere);
+}
+.sommaire ol { grid-column: 10 / span 3; list-style: none; pointer-events: auto; }
+.sommaire a  { display: flex; align-items: baseline; gap: var(--e1); text-decoration: none; }
+.sommaire .num { position: relative; font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); }
+.sommaire a:hover .libelle, .sommaire a[aria-current] .libelle { text-decoration: underline 1px; text-underline-offset: 3px; }
+.sommaire a[aria-current] .num { color: transparent; }
+.sommaire a[aria-current] .num::before { content: '[ ]'; position: absolute; color: var(--texte); }
+@media (max-width: 1023px) { .sommaire { display: none; } }
+
+/* ===== Grille de page ===== */
+main {
+  position: relative; z-index: 1; overflow-x: clip;
+  display: grid; grid-template-columns: repeat(var(--colonnes), minmax(0, 1fr)); column-gap: var(--goutiere);
+  padding: calc(var(--entete-h) + var(--e10)) var(--marge) var(--marge);
+}
+main > * { grid-column: 1 / -1; }
+@media (min-width: 1024px) {
+  .hero, .coin, #contact { grid-column: 1 / span 6; }
+  #missions, #ia         { grid-column: 1 / span 8; }
+}
+section { padding-top: var(--e9); counter-increment: section; }
+
+/* ===== Styles de texte ===== */
+.display      { font: 400 var(--t-display)/1.1 var(--serif); letter-spacing: var(--serre); }
+.display span { display: block; }
+.titre        { font: 400 var(--t-titre)/1.1 var(--serif); letter-spacing: var(--serre); }
+/* Numéro de section, repris du sommaire */
+section .titre::before {
+  content: '[' counter(section) ']'; display: block; margin-bottom: var(--e2);
+  font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret);
+}
+.legende      { font: 400 var(--t-petit)/1.35 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
+.discret      { color: var(--texte-discret); }
+.contexte     { max-width: 60ch; }
+
+/* ===== Mise en page ===== */
+.entete { display: flex; flex-direction: column; gap: var(--e2); margin-bottom: var(--e4); }
+.pile   { display: flex; flex-direction: column; gap: var(--e1); }
+.tags   { display: flex; flex-wrap: wrap; gap: 6px; }
+.tags span {
+  display: inline-flex; align-items: center; height: 26px; padding: 0 9px;
+  background: var(--couche); font: 400 var(--t-petit)/1 var(--mono); letter-spacing: var(--mono-ls);
+}
+
+/* ===== Boutons : pastilles grises carrées floutées, en semi-mono ===== */
+.actions { display: flex; flex-wrap: wrap; gap: var(--e1); }
+.bouton {
+  display: inline-flex; align-items: center; gap: 6px; height: 30px; min-width: 40px; padding: 0 12px;
+  border: 0; cursor: pointer; text-decoration: none;
+  font: 400 var(--t-petit)/1 var(--mono); letter-spacing: var(--mono-ls);
+  background: var(--couche); color: var(--texte); backdrop-filter: blur(12px);
+  transition: background .15s, color .15s;
+}
+.bouton:hover     { background: var(--couche-survol); }
+.bouton.principal { background: var(--accent); color: var(--fond); }
+.bouton.principal:hover { background: var(--texte); }
+.bouton.icone     { justify-content: center; width: 40px; padding: 0; }
+.bouton svg       { width: 14px; height: 14px; }
+
+/* ===== Hero ===== */
+.hero { display: flex; flex-direction: column; gap: var(--e3); }
+.accroche { max-width: 60ch; }
+.hero .actions { margin-top: var(--e1); }
+
+/* ===== Certifications + CV : fiche technique en semi-mono, sous le hero ===== */
+.coin { display: flex; flex-direction: column; gap: var(--e2); margin-top: var(--e6); max-width: 520px; }
+.coin .cv { display: flex; gap: 6px; }
+.spec { list-style: none; display: flex; flex-direction: column; gap: 4px; font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); }
+.spec li { display: flex; align-items: baseline; gap: var(--e1); }
+.spec .code   { flex: none; min-width: 40px; color: var(--texte); }
+.spec .points { flex: 1 1 24px; min-width: 24px; overflow: hidden; white-space: nowrap; color: rgba(0, 0, 0, .25); }
+.spec .points::before { content: '..................................................................................................................................'; }
+.spec .nom    { flex: 0 1 auto; text-align: right; color: var(--texte-discret); }
+
+/* Copier le CV : l'info-bulle indique le format */
+.copier-cv { position: relative; }
+.copier-cv::after {
+  content: attr(data-indice); position: absolute; left: 0; top: calc(100% + 8px);
+  padding: 6px 8px; background: var(--texte); color: var(--fond);
+  font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); white-space: nowrap;
+  opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity .15s, transform .15s;
+}
+.copier-cv:hover::after, .copier-cv:focus-visible::after, .copier-cv.copie::after { opacity: 1; transform: none; }
+
+/* ===== Missions : une colonne de repères à gauche (date, client), le récit à droite =====
+   L'œil descend la colonne des dates, puis lit titre → avant/après → chiffres. */
+.waterfall  { display: flex; flex-direction: column; gap: var(--e8); }
+.span       { display: grid; grid-template-columns: var(--meta, 200px) minmax(0, 1fr); column-gap: var(--e4); }
+.span-meta  { display: flex; flex-direction: column; gap: var(--e1); padding-top: 4px; }
+.date       { font: 400 var(--t-corps)/1.25 var(--mono); letter-spacing: var(--mono-ls); }
+.client     { font: 400 var(--t-petit)/1.35 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
+.span-corps { display: flex; flex-direction: column; gap: var(--e3); }
+.span-nom   { font: 400 var(--t-titre-s)/1.2 var(--serif); letter-spacing: -.01em; }
+
+/* Avant / Après : libellé en semi-mono aligné à gauche, phrase en serif */
+.avant-apres { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 10px var(--e2); max-width: 60ch; }
+.avant-apres dt { padding-top: 3px; font: 400 var(--t-petit)/1.35 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
+.avant-apres dd { margin: 0; }
+
+/* ===== Chiffres-clés : valeur en serif, libellé en semi-mono ===== */
+.chiffres { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--e4); margin: var(--e1) 0; }
+.chiffres li { display: flex; flex-direction: column; gap: var(--e1); }
+.chiffres .valeur { font: 400 var(--t-titre)/1.1 var(--serif); letter-spacing: var(--serre); }
+.chiffres .valeur small { margin-left: 2px; font-size: var(--t-corps); letter-spacing: 0; color: var(--texte-discret); }
+.chiffres .libelle { max-width: 200px; font: 400 var(--t-petit)/1.35 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
+
+/* ===== Bloc IA ===== */
+.bloc-ia { display: flex; flex-direction: column; gap: var(--e2); }
+.bloc-ia .titre { max-width: 560px; margin-bottom: var(--e2); }
+.bloc-ia .chiffres { margin-top: var(--e3); }
+
+/* ===== Contact ===== */
+.contact { gap: var(--e3); }
+.mail { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: var(--e2); font: 400 var(--t-titre)/1.1 var(--serif); letter-spacing: var(--serre); text-decoration: none; }
+.mail:hover > span:first-child { text-decoration: underline 1px; text-underline-offset: 4px; }
+.mail .indice { font: 400 var(--t-petit)/1 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); opacity: 0; transition: opacity .2s; }
+.mail:hover .indice, .mail.copie .indice { opacity: 1; }
+.mail.copie .indice { color: var(--texte); }
+.coordonnees { gap: 0; }
+.coordonnees a { text-decoration-color: rgba(0, 0, 0, .3); }
+.coordonnees a:hover { text-decoration-color: var(--texte); }
+
+footer { display: flex; justify-content: space-between; gap: var(--e2); margin-top: var(--e9); padding-top: var(--e4); }
+
+/* ===== Versions de texte : longue sur grand écran, courte sur mobile ===== */
+.court { display: none; }
+
+/* Bouton de rendez-vous flottant, en bas au centre : mobile seulement */
+.rdv-flottant { display: none; }
+
+/* ===== Mobile ===== */
+@media (max-width: 640px) {
+  main { padding-top: var(--e7); padding-bottom: 96px; }  /* place pour le bouton flottant */
+
+  /* Texte court, actions regroupées dans le bouton flottant */
+  .long { display: none; }
+  .court { display: inline; }
+  .hero .actions, .contact .actions { display: none; }
+  .rdv-flottant {
+    display: inline-flex; position: fixed; z-index: 3; left: 50%; transform: translateX(-50%);
+    bottom: calc(16px + env(safe-area-inset-bottom)); height: 40px; padding: 0 20px; white-space: nowrap;
+  }
+
+  /* Certifications : code + nom, sans points de conduite */
+  .coin { margin-top: var(--e5); }
+  .spec .points { display: none; }
+  .spec .nom { text-align: left; }
+
+  /* Missions : une seule colonne, l'essentiel seulement */
+  .span { grid-template-columns: 1fr; row-gap: var(--e2); }
+  .span-meta { flex-flow: row wrap; align-items: baseline; column-gap: var(--e2); padding-top: 0; }
+  .span-corps { gap: var(--e3); }
+  .avant-apres { grid-template-columns: 1fr; row-gap: 2px; }
+  .avant-apres dd + dt { margin-top: 12px; }
+  .avant-apres dt:nth-of-type(n+3), .avant-apres dd:nth-of-type(n+3) { display: none; }  /* « Mon rôle » */
+  .tags span:nth-child(n+4) { display: none; }
+
+  /* Chiffres : trois sur une ligne */
+  .chiffres { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; }
+  .chiffres li { gap: 4px; }
+  .chiffres .valeur { font-size: 22px; white-space: nowrap; }
+  .chiffres .valeur small { font-size: 13px; }
+  .chiffres .libelle { font-size: 11px; }
+
+  .mail { font-size: 20px; }
+  .mail .indice { display: none; }
+  footer { flex-direction: column; gap: 4px; }
+}
+
+@media print { #ascii, .sommaire, .rdv-flottant { display: none; } }

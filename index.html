@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Victor Marti, ingénieur plateforme d’observabilité</title>
+<meta name="description" content="Victor Marti, ingénieur plateforme d’observabilité freelance. Une plateforme d’observabilité commune à toutes vos équipes, basée sur OpenTelemetry, avec l’outil de votre choix : Elastic, Splunk, Grafana LGTM, Dash0. Montpellier, remote ou hybride.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400&family=DM+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<pre id="ascii" aria-hidden="true"></pre>
+
+<nav class="sommaire" aria-label="Sommaire">
+  <ol class="halo">
+    <li><a href="#missions" data-touche="1"><span class="num" aria-hidden="true">[1]</span><span class="libelle">Missions</span></a></li>
+    <li><a href="#ia" data-touche="2"><span class="num" aria-hidden="true">[2]</span><span class="libelle">IA</span></a></li>
+    <li><a href="#contact" data-touche="3"><span class="num" aria-hidden="true">[3]</span><span class="libelle">Contact</span></a></li>
+  </ol>
+</nav>
+
+<main>
+
+  <header class="hero halo">
+    <h1 class="display"><span>Victor Marti</span><span class="discret">Ingénieur plateforme d’observabilité.</span></h1>
+    <p class="accroche"><span class="long">Je construis une plateforme d’observabilité commune à toutes vos équipes. Chaque équipe s’y branche et obtient automatiquement ses logs, métriques, traces, dashboards et alertes, sans rien construire elle-même. La collecte repose sur OpenTelemetry, avec l’outil de votre choix&nbsp;: Elastic, Splunk, Grafana LGTM, Dash0.</span><span class="court">Une plateforme d’observabilité commune à toutes vos équipes&nbsp;: logs, métriques, traces et alertes, sur OpenTelemetry et l’outil de votre choix.</span></p>
+    <div class="actions">
+      <a class="bouton principal" href="https://calendly.com/skypictheboss/30min" data-rdv>Prendre rendez-vous</a>
+    </div>
+  </header>
+  <aside class="coin halo" aria-label="Certifications et CV">
+    <ul class="spec">
+      <li><span class="code">CKA</span><span class="points" aria-hidden="true"></span><span class="nom">Certified Kubernetes Administrator</span></li>
+      <li><span class="code">OTCA</span><span class="points" aria-hidden="true"></span><span class="nom">OpenTelemetry Certified Associate</span></li>
+      <li><span class="code">ECE</span><span class="points" aria-hidden="true"></span><span class="nom">Elastic Certified Engineer</span></li>
+    </ul>
+    <div class="cv">
+      <a class="bouton" href="Victor_Marti_CV.pdf" download>CV en PDF ↓</a>
+      <button class="bouton icone copier-cv" type="button" data-indice="Copier le CV (.md)" aria-label="Copier le CV au format Markdown"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M5.5 5.5h8v8h-8z M10.5 5.5v-3h-8v8h3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="miter"/></svg></button>
+    </div>
+  </aside>
+
+  <section id="missions">
+    <header class="entete halo">
+      <h2 class="titre">Du besoin à la production</h2>
+    </header>
+    <div class="waterfall">
+
+      <article class="span halo">
+        <div class="span-meta">
+          <span class="date">2025 – 2026</span>
+          <span class="client">Thales · département IT</span>
+        </div>
+        <div class="span-corps">
+          <h3 class="span-nom">Plateforme d’observabilité</h3>
+          <dl class="avant-apres">
+            <dt>Avant</dt><dd>Chaque équipe construisait sa propre observabilité, chacune à sa façon.</dd>
+            <dt>Après</dt><dd>Une plateforme commune, en environnement sécurisé&nbsp;: une équipe s’y branche et reçoit automatiquement agents, dashboards, alertes et détection d’anomalies.</dd>
+            <dt>Mon rôle</dt><dd>La chaîne de collecte OpenTelemetry et le contenu Kibana, avec le déploiement d’Elastic et l’automatisation.</dd>
+          </dl>
+          <ul class="chiffres">
+            <li><span class="valeur">40</span><span class="libelle">équipes branchées</span></li>
+            <li><span class="valeur">~2<small>/sem.</small></span><span class="libelle">nouvelles équipes</span></li>
+            <li><span class="valeur">100<small>+</small></span><span class="libelle">d’agents déployés</span></li>
+          </ul>
+          <div class="tags"><span>OpenTelemetry</span><span>Elastic</span><span>Kibana</span><span>Kubernetes</span><span>Helm</span></div>
+        </div>
+      </article>
+
+      <article class="span halo">
+        <div class="span-meta">
+          <span class="date">2025</span>
+          <span class="client">RMN-Grand Palais</span>
+        </div>
+        <div class="span-corps">
+          <h3 class="span-nom">Livraison de bases de données</h3>
+          <dl class="avant-apres">
+            <dt>Avant</dt><dd>Bases SQL Server et packages SSIS livrés à la main, sans historique fiable.</dd>
+            <dt>Après</dt><dd>Schémas et données versionnés&nbsp;; chaque release est testée puis déployée par la CI/CD.</dd>
+          </dl>
+          <ul class="chiffres">
+            <li><span class="valeur">1<small>h</small></span><span class="libelle">par livraison, de bout en bout</span></li>
+            <li><span class="valeur">100<small>%</small></span><span class="libelle">des releases testées</span></li>
+            <li><span class="valeur">1</span><span class="libelle">commande pour revenir en arrière</span></li>
+          </ul>
+          <div class="tags"><span>SQL Server</span><span>SSIS</span><span>GitLab CI</span><span>GitOps</span></div>
+        </div>
+      </article>
+
+      <article class="span halo">
+        <div class="span-meta">
+          <span class="date">2024 – 2025</span>
+          <span class="client">OPCO Santé</span>
+        </div>
+        <div class="span-corps">
+          <h3 class="span-nom">Infrastructure as Code</h3>
+          <dl class="avant-apres">
+            <dt>Avant</dt><dd>VM et réseau montés à la main, sans supervision, mots de passe en clair.</dd>
+            <dt>Après</dt><dd>Une infrastructure en modules Terraform revus, validée, scannée et déployée par la CI/CD.</dd>
+          </dl>
+          <ul class="chiffres">
+            <li><span class="valeur">5<small>min</small></span><span class="libelle">pour tout déployer</span></li>
+            <li><span class="valeur">0</span><span class="libelle">mot de passe en clair</span></li>
+            <li><span class="valeur">100<small>%</small></span><span class="libelle">des merge requests scannées</span></li>
+          </ul>
+          <div class="tags"><span>Terraform</span><span>GitLab CI</span><span>Azure</span></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+
+  <section id="ia">
+    <div class="bloc-ia halo">
+      <h2 class="titre">L’IA, je m’en sers et je la construis</h2>
+      <p class="contexte"><span class="long">Je conçois et déploie mes propres agents, y compris des systèmes où plusieurs agents coopèrent. L’IA me fait gagner du temps sur l’exécution, et je réinvestis ce temps dans le cadrage, la revue et les contrôles. Rien ne part en production sans être relu, testé et tracé.</span><span class="court">Je conçois et déploie mes propres agents. Rien ne part en production sans être relu, testé et tracé.</span></p>
+      <ul class="chiffres">
+        <li><span class="valeur">2</span><span class="libelle">hackathons d’innovation CGI gagnés, au niveau France</span></li>
+        <li><span class="valeur">Agents</span><span class="libelle">conçus, déployés et orchestrés par moi, en multi-agents</span></li>
+        <li><span class="valeur">Contrôlé</span><span class="libelle">chaque sortie relue, testée et tracée avant la production</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="contact">
+    <header class="entete halo">
+      <h2 class="titre">Une observabilité à centraliser&nbsp;? Parlons&#8209;en.</h2>
+    </header>
+    <div class="pile contact halo">
+      <a class="mail" href="mailto:victor.marti564d@gmail.com" data-copier="victor.marti564d@gmail.com"><span>victor.marti564d@gmail.com</span><span class="indice" aria-live="polite">Cliquer pour copier</span></a>
+      <div class="pile coordonnees">
+        <a href="tel:+33695844460">06 95 84 44 60</a>
+        <a href="https://urlz.fr/ixuL">LinkedIn</a>
+        <span class="discret">Montpellier, remote ou hybride. Français et anglais.</span>
+      </div>
+      <div class="actions">
+        <a class="bouton principal" href="https://calendly.com/skypictheboss/30min" data-rdv>Réserver 30 minutes</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="legende halo"><span>Victor Marti</span><span>© 2026</span></footer>
+
+</main>
+
+<a class="bouton principal rdv-flottant" href="https://calendly.com/skypictheboss/30min" data-rdv>Prendre rendez-vous</a>
+
+<script type="text/markdown" id="cv-md"># Victor Marti
+
+**Ingénieur Plateforme d'Observabilité, freelance**
+CKA · OpenTelemetry Certified Associate · Elastic Certified Engineer
+
+Montpellier · remote ou hybride · victor.marti564d@gmail.com · 06 95 84 44 60 · [LinkedIn](https://urlz.fr/ixuL)
+
+---
+
+## Ce que j'apporte
+
+Je construis une **plateforme d'observabilité commune à toutes vos équipes** : chaque équipe s'y branche et obtient automatiquement ses logs, métriques, traces, dashboards et alertes. La collecte repose sur OpenTelemetry, avec l'outil de votre choix : Elastic, Splunk, Grafana LGTM, Dash0.
+
+## Missions
+
+**Plateforme d'observabilité centralisée, en service — Thales, département IT** · 2025–2026
+Environnement ultra contraint et sécurisé. Une équipe souscrit (VM ou Kubernetes) et reçoit automatiquement agents configurés, dashboards, alertes et jobs de machine learning dans Elastic.
+- **Adoption** : 40 équipes onboardées, au rythme de 2 par semaine ; des centaines d'agents déployés au total, des dizaines chaque semaine.
+- **Chaîne de collecte** : agents et collectors OpenTelemetry (déploiement, configuration, cycle de vie), en Helm, sur VM et Kubernetes.
+- **Contenu Kibana** : dashboards, alertes et détection d'anomalies par machine learning, livrés à chaque équipe.
+- **Toutes les autres briques** : déploiement d'Elastic, automatisation, infrastructure cloud, sécurité.
+
+**CI/CD de bases de données SQL Server et SSIS — RMN-Grand Palais** · 2025
+- Bases SQL Server et packages SSIS sous contrôle de version : schémas, données, release automatisée.
+
+**Infrastructure as Code et CI/CD — OPCO Santé** · 2025
+- Infrastructure client en Terraform, en modules réutilisables et revus, et chaîne CI/CD qui la valide, la scanne et la déploie.
+
+**Transverse**
+- Pipelines GitOps de production (GitLab CI, ArgoCD), clusters Kubernetes sur Google Cloud et Azure.
+- Deux fois lauréat du hackathon innovation CGI (IA générative).
+- Contributeur open source OpenTelemetry.
+
+## Compétences
+
+| | |
+|---|---|
+| **Observabilité** | OpenTelemetry (collectors, agents, OTLP), machine learning, traces, visualisation |
+| **Outils** | Elastic / Kibana ; Splunk (mission courte chez Airbus) et Grafana LGTM (missions courtes) ; Dash0 |
+| **Kubernetes** | GKE, AKS, Helm, ArgoCD, Docker |
+| **Cloud & IaC** | Google Cloud, Azure, Terraform, Ansible, Linux |
+| **CI/CD** | GitLab CI, GitOps |
+| **IA** | Python, RAG, évaluation de LLM |
+
+## Formation
+
+Ingénieur ENSEEIHT (N7), Toulouse, 2025 · Erasmus, Universidad Politécnica de Madrid, 2023
+Français natif · anglais courant
+</script>
+
+<script src="main.js"></script>
+</body>
+</html>
