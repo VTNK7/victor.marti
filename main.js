@@ -75,20 +75,15 @@ document.querySelectorAll('[data-rdv]').forEach(lien => {
   });
 })();
 
-/* Barre du bas (mobile) : visible une fois le hero dépassé, quand on remonte ou en fin de page. */
-(function barreMobile() {
-  const barre = document.querySelector('.barre-mobile');
-  const hero = document.querySelector('.hero');
-  const SEUIL = 8; /* px de défilement avant de changer de sens, pour éviter le clignotement */
-  let dernierY = scrollY, monte = false;
-  function maj() {
-    const y = scrollY;
-    if (Math.abs(y - dernierY) > SEUIL) { monte = y < dernierY; dernierY = y; }
-    const apresHero = hero.getBoundingClientRect().bottom < 0;
-    const enBas = innerHeight + y >= document.documentElement.scrollHeight - 160;
-    barre.classList.toggle('visible', apresHero && (monte || enBas));
-  }
-  addEventListener('scroll', maj, { passive: true });
+/* Missions : dépliables sur mobile, toujours ouvertes sur grand écran. */
+(function missions() {
+  const grandEcran = matchMedia('(min-width: 641px)');
+  const details = [...document.querySelectorAll('.detail')];
+  const maj = () => { if (grandEcran.matches) details.forEach(d => { d.open = true; }); };
+  details.forEach(d => d.querySelector('summary').addEventListener('click', e => {
+    if (grandEcran.matches) e.preventDefault();
+  }));
+  grandEcran.addEventListener('change', maj);
   maj();
 })();
 

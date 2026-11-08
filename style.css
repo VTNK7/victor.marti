@@ -32,7 +32,7 @@
   :root {
     --colonnes: 6; --goutiere: 16px; --marge: 16px;
     --e1: 4px; --e2: 6px; --e3: 16px; --e5: 32px; --e6: 48px; --e7: 64px; --e8: 64px; --e9: 72px; --e10: 108px;
-    --interligne: 19px; --t-corps: 15px; --t-titre-s: 19px; --t-titre: 22px; --t-display: 28px;
+    --interligne: 21px; --t-corps: 17px; --t-petit: 13px; --t-titre-s: 21px; --t-titre: 25px; --t-display: 32px;
   }
 }
 
@@ -142,6 +142,9 @@ section .titre::before {
 .hero { display: flex; flex-direction: column; gap: var(--e3); }
 .accroche { max-width: 60ch; }
 .hero .actions { margin-top: var(--e1); }
+/* Disponibilité : une ligne discrète, un point en guise de voyant */
+.dispo { display: flex; align-items: center; gap: var(--e1); font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
+.dispo::before { content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 
 /* ===== Certifications + CV : fiche technique en semi-mono, sous le hero ===== */
 .coin { display: flex; flex-direction: column; gap: var(--e2); margin-top: var(--e6); max-width: 520px; }
@@ -172,6 +175,13 @@ section .titre::before {
 .client     { font: 400 var(--t-petit)/1.35 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
 .span-corps { display: flex; flex-direction: column; gap: var(--e3); }
 .span-nom   { font: 400 var(--t-titre-s)/1.2 var(--serif); letter-spacing: -.01em; }
+
+/* Détail d'une mission : replié sur mobile (résumé seul), toujours ouvert sur grand écran (cf. main.js) */
+.detail > summary ~ * { margin-top: var(--e3); }
+.detail > .chiffres { margin: calc(var(--e3) + var(--e1)) 0 var(--e1); }  /* même respiration qu'avant autour des chiffres */
+.detail summary { display: block; list-style: none; }
+.detail summary::-webkit-details-marker { display: none; }
+.resume { display: none; }
 
 /* Avant / Après : libellé en semi-mono aligné à gauche, phrase en serif */
 .avant-apres { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 10px var(--e2); max-width: 60ch; }
@@ -206,13 +216,17 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
 /* ===== Versions de texte : longue sur grand écran, courte sur mobile ===== */
 .court { display: none; }
 
-/* Barre du bas (sommaire + rendez-vous) et boutons de contact : mobile seulement */
-.barre-mobile, .contact-mobile { display: none; }
+/* Boutons de contact : mobile seulement */
+.contact-mobile { display: none; }
 
 /* ===== Mobile ===== */
 @media (max-width: 640px) {
   :root { --texte-discret: #555555; }
-  main { padding-top: var(--e7); padding-bottom: 112px; }  /* place pour la barre du bas */
+  main { padding-top: var(--e7); }
+  body { line-height: 1.35; }
+
+  /* Sans sommaire sur mobile, les numéros de section ne renvoient à rien */
+  section .titre::before { display: none; }
 
   /* Texte court */
   .long { display: none; }
@@ -222,42 +236,42 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
   .bouton { height: 44px; min-width: 44px; padding: 0 16px; }
   .copier-cv { display: none; }  /* son info-bulle n'existe qu'au survol */
 
-  /* Barre du bas : apparaît après le hero, se cache quand on descend, revient quand on remonte */
-  .barre-mobile {
-    display: flex; justify-content: center; gap: 6px; position: fixed; z-index: 3; inset-inline: 0; bottom: 0;
-    padding: 24px var(--marge) calc(16px + env(safe-area-inset-bottom));
-    background: linear-gradient(to top, var(--fond) 60%, transparent);
-    transform: translateY(100%); visibility: hidden; transition: transform .25s ease, visibility 0s .25s;
-  }
-  .barre-mobile.visible { transform: none; visibility: visible; transition: transform .25s ease; }
-  .barre-mobile .bouton { padding: 0 12px; }
-  @media (prefers-reduced-motion: reduce) { .barre-mobile, .barre-mobile.visible { transition: none; } }
-
   /* Certifications : code + nom, sans points de conduite */
   .coin { margin-top: var(--e5); }
   .spec .points { display: none; }
   .spec .nom { text-align: left; }
 
-  /* Missions : une seule colonne, l'essentiel seulement */
-  .span { grid-template-columns: 1fr; row-gap: var(--e2); }
+  /* Missions : une ligne de repères, le titre et une phrase ; un tap déplie le détail */
+  .waterfall { gap: var(--e5); }
+  .span { grid-template-columns: 1fr; row-gap: 4px; }
   .span-meta { flex-flow: row wrap; align-items: baseline; column-gap: var(--e2); padding-top: 0; }
-  .span-corps { gap: var(--e3); }
+  .date { font-size: var(--t-petit); }
+  .detail summary { position: relative; padding-right: 36px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .detail summary::after {
+    content: '[+]'; position: absolute; top: 4px; right: 0;
+    font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret);
+  }
+  .detail[open] summary::after { content: '[−]'; }
+  .resume { display: block; margin-top: 6px; color: var(--texte-discret); }
   .avant-apres { grid-template-columns: 1fr; row-gap: 2px; }
   .avant-apres dd + dt { margin-top: 12px; }
-  .avant-apres dt:nth-of-type(n+3), .avant-apres dd:nth-of-type(n+3) { display: none; }  /* « Mon rôle » */
-  .tags span:nth-child(n+4) { display: none; }
 
-  /* Chiffres : trois sur une ligne */
-  .chiffres { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; }
-  .chiffres li { gap: 4px; }
-  .chiffres .valeur { font-size: 22px; white-space: nowrap; }
+  /* Chiffres : un par ligne, valeur puis libellé */
+  .chiffres { grid-template-columns: 1fr; gap: 6px; margin: 0; }
+  .chiffres li { flex-direction: row; align-items: baseline; gap: var(--e2); }
+  .chiffres .valeur { flex: none; min-width: 72px; font-size: 22px; white-space: nowrap; }
   .chiffres .valeur small { font-size: 13px; }
+  .chiffres .libelle { max-width: none; }
+  .detail > .chiffres { margin: var(--e3) 0 0; }
 
-  /* Contact : gros boutons à la place des liens, le rendez-vous est dans la barre du bas */
-  .mail { font-size: 20px; }
-  .mail .indice, .coordonnees a, .contact .actions:not(.contact-mobile) { display: none; }
+  /* IA : une seule phrase */
+  .bloc-ia .chiffres { display: none; }
+
+  /* Contact : gros boutons à la place des liens */
+  .mail { font-size: 22px; }
+  .mail .indice, .coordonnees a { display: none; }
   .contact-mobile { display: flex; }
   footer { flex-direction: column; gap: 4px; }
 }
 
-@media print { #ascii, .sommaire, .barre-mobile { display: none; } }
+@media print { #ascii, .sommaire { display: none; } }
