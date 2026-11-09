@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Pixel Bloom</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* Layout: poster canvas on the left, a narrow instrument panel on the right; the "recipe" strip below explains the filter step by step. */
+:root{
+  --bg:#F7F5F1; --panel:#FFFFFF; --fg:#1A1714; --muted:#77706A; --line:#E6E1DA; --accent:#E8742A;
+  --f-ui:"Instrument Sans", system-ui, -apple-system, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#151311; --panel:#1E1B18; --fg:#EFEAE3; --muted:#9C948B; --line:#2F2B27; --accent:#F08A45; color-scheme:dark }}
+:root[data-theme="dark"]{ --bg:#151311; --panel:#1E1B18; --fg:#EFEAE3; --muted:#9C948B; --line:#2F2B27; --accent:#F08A45; color-scheme:dark }
+
+body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-block:32px 64px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:grid;gap:40px}
+header{display:grid;gap:6px}
+header h1{font-size:28px;font-weight:500;letter-spacing:-.02em;margin:0;text-wrap:balance}
+header p{margin:0;color:var(--muted);max-width:62ch}
+.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+.studio{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;align-items:start}
+@media (max-width:820px){.studio{grid-template-columns:minmax(0,1fr)}}
+.stage{min-width:0;display:flex;justify-content:center}
+#poster{width:100%;max-width:620px;height:auto;aspect-ratio:1060/1500;display:block;box-shadow:0 1px 2px rgba(0,0,0,.06),0 18px 50px -20px rgba(0,0,0,.25);background:#fff}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:22px;min-width:0}
+.group{display:grid;gap:12px}
+.group > .eyebrow{padding-bottom:8px;border-bottom:1px solid var(--line)}
+.presets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.preset{font:inherit;font-size:13px;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:6px;padding:8px 6px;cursor:pointer;display:grid;justify-items:center;gap:6px}
+.preset i{width:22px;height:22px;display:block;border-radius:3px}
+.preset[aria-pressed="true"]{border-color:var(--fg)}
+label.field{display:grid;gap:4px;font-size:13px}
+label.field span{color:var(--muted)}
+input[type=text]{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);min-width:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.slider{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:13px;align-items:center}
+.slider span{color:var(--muted)}
+.slider output{font-family:var(--f-mono);font-size:12px;font-variant-numeric:tabular-nums}
+.slider input{grid-column:1/-1;width:100%;accent-color:var(--accent)}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button.act,label.act{font:inherit;font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:6px;padding:9px 10px;cursor:pointer;text-align:center}
+button.act:hover,label.act:hover,.preset:hover{border-color:var(--muted)}
+button:focus-visible,label.act:focus-within,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.toggle{display:flex;gap:8px;align-items:center;font-size:13px}
+#file{position:absolute;opacity:0;width:1px;height:1px}
+.hint{font-size:12px;color:var(--muted);margin:0}
+
+.recipe{display:grid;gap:18px}
+.recipe h2{font-size:20px;font-weight:500;letter-spacing:-.01em;margin:0}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:820px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.step{display:grid;gap:8px;align-content:start;min-width:0}
+.step canvas{width:100%;height:auto;aspect-ratio:3/4;border-radius:6px;background:#F5F1EB;border:1px solid var(--line)}
+.step b{font-weight:500;font-size:14px}
+.step p{margin:0;font-size:13px;color:var(--muted)}
+.step code{font-family:var(--f-mono);font-size:11.5px}
+@media (prefers-reduced-motion: reduce){ #animWrap{display:none} }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Démo · filtre flou + blocs pixel</div>
+    <h1>Pixel Bloom</h1>
+    <p>Une plante passée sous un flou très fort, puis découpée par des blocs alignés sur une grille où l'image redevient plus nette ou s'étire verticalement. Un grain fin unifie le tout.</p>
+  </header>
+
+  <section class="studio">
+    <div class="stage"><canvas id="poster" width="1060" height="1500" aria-label="Carte générée avec le filtre"></canvas></div>
+
+    <form class="panel" id="panel" onsubmit="return false">
+      <div class="group">
+        <div class="eyebrow">Palette</div>
+        <div class="presets" id="presets"></div>
+      </div>
+
+      <div class="group">
+        <div class="eyebrow">Carte</div>
+        <label class="field"><span>Nom</span><input type="text" id="name" value="Victor M." maxlength="22"></label>
+        <div class="row2">
+          <label class="field"><span>Profile ID</span><input type="text" id="pid" value="4120397" maxlength="10"></label>
+          <label class="field"><span>Marque</span><input type="text" id="brand" value="bloom" maxlength="12"></label>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="eyebrow">Filtre</div>
+        <label class="slider"><span>Flou</span><output id="o-blur"></output><input type="range" id="blur" min="8" max="70" value="34"></label>
+        <label class="slider"><span>Densité des blocs</span><output id="o-density"></output><input type="range" id="density" min="0" max="100" value="45"></label>
+        <label class="slider"><span>Hauteur de ligne</span><output id="o-row"></output><input type="range" id="row" min="30" max="140" value="75"></label>
+        <label class="slider"><span>Part d'étirement</span><output id="o-smear"></output><input type="range" id="smear" min="0" max="100" value="40"></label>
+        <label class="slider"><span>Grain</span><output id="o-grain"></output><input type="range" id="grain" min="0" max="60" value="22"></label>
+      </div>
+
+      <div class="group">
+        <div class="eyebrow">Image</div>
+        <div class="btns">
+          <button type="button" class="act" id="newPlant">Nouvelle plante</button>
+          <button type="button" class="act" id="reshuffle">Rebattre les blocs</button>
+        </div>
+        <label class="act" for="file">Utiliser ma photo…<input type="file" id="file" accept="image/*"></label>
+        <label class="toggle" id="animWrap"><input type="checkbox" id="anim"> Animer les blocs</label>
+        <p class="hint">Tu peux aussi glisser une image sur la carte. Elle reste dans ton navigateur.</p>
+      </div>
+    </form>
+  </section>
+
+  <section class="recipe">
+    <h2>La recette du filtre</h2>
+    <div class="steps">
+      <div class="step"><canvas id="t1" width="300" height="400"></canvas><b>1 · Source</b><p>Une photo de fleur détourée, posée sur le fond crème de la carte.</p></div>
+      <div class="step"><canvas id="t2" width="300" height="400"></canvas><b>2 · Flou fort</b><p>Flou gaussien d'environ 3 % de la largeur : <code>filter: blur(34px)</code>. La forme devient une brume colorée.</p></div>
+      <div class="step"><canvas id="t3" width="300" height="400"></canvas><b>3 · Blocs sur grille</b><p>Grille de colonnes fines et de lignes hautes. Là où la couleur est dense, des segments affichent une version peu floutée, décalée, ou une seule ligne de pixels étirée vers le bas.</p></div>
+      <div class="step"><canvas id="t4" width="300" height="400"></canvas><b>4 · Grain et typo</b><p>Bruit monochrome en mode <code>overlay</code>, puis la typo nette par-dessus : grotesque serrée et mono pour l'identifiant.</p></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+const W = 1060, H = 1500, S = 0.5;            // poster size, working scale for blurred layers
+const SW = 900, SH = 1100;                     // plant source size
+const CREAM = '#F5F1EB';
+const CARD = { x: W*.1216, y: H*.1185, w: W*.756, h: H*.764 };
+
+const PALETTES = {
+  coquelicot: { label:'Coquelicot', petal:'#F4781F', light:'#FDB46A', core:'#D9501A', bud:'#E2622A',
+    stem:'#9EAA4C', leaf:'#8A9A3A', leafDark:'#5F6F22', ground:'#FFFFFF', bgZoom:2.4 },
+  pivoine:    { label:'Pivoine', petal:'#F07D92', light:'#F9C2CB', core:'#E2526E', bud:'#EC6F85',
+    stem:'#8C9A3E', leaf:'#7D8F32', leafDark:'#56661E', ground:'#FFFFFF', bgZoom:2.1 },
+  bleuet:     { label:'Bleuet', petal:'#1667DA', light:'#4FB0F5', core:'#0A3C96', bud:'#D98A4B',
+    stem:'#46552A', leaf:'#4E6A2A', leafDark:'#28341A', ground:'#33402A', bgZoom:2.9 },
+};
+
+// ---------- utils
+const $ = id => document.getElementById(id);
+function mulberry(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const canvas = (w, h) => { const c = document.createElement('canvas'); c.width = Math.round(w); c.height = Math.round(h); return c; };
+const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+
+const HAS_FILTER = (() => { const x = canvas(2,2).getContext('2d'); if (!('filter' in x)) return false;
+  x.filter = 'blur(2px)'; return x.filter === 'blur(2px)'; })();
+
+// Blur `src` into a new canvas of same size. Fallback: repeated down/up sampling.
+function blurCanvas(src, r){
+  const out = canvas(src.width, src.height), x = out.getContext('2d');
+  if (r <= 0) { x.drawImage(src, 0, 0); return out; }
+  if (HAS_FILTER) { x.filter = `blur(${r}px)`; x.drawImage(src, 0, 0); return out; }
+  const f = Math.max(1, r / 2.5);
+  const sm = canvas(Math.max(1, src.width / f), Math.max(1, src.height / f)), sx = sm.getContext('2d');
+  sx.imageSmoothingQuality = 'high'; sx.drawImage(src, 0, 0, sm.width, sm.height);
+  for (let i = 0; i < 2; i++) { const t = canvas(sm.width, sm.height); t.getContext('2d').drawImage(sm, 0, 0);
+    sx.clearRect(0,0,sm.width,sm.height); sx.drawImage(t, -1, -1, sm.width + 2, sm.height + 2); }
+  x.imageSmoothingQuality = 'high'; x.drawImage(sm, 0, 0, out.width, out.height); return out;
+}
+
+// ---------- procedural plant
+function petalPath(x, len, wid, tip = 1.05){
+  x.beginPath(); x.moveTo(0, 0);
+  x.bezierCurveTo(len * .2, -wid * .9, len * tip, -wid * .9, len, 0);
+  x.bezierCurveTo(len * tip, wid * .9, len * .2, wid * .9, 0, 0); x.closePath();
+}
+function leaf(x, px, py, a, len, wid, pal){
+  x.save(); x.translate(px, py); x.rotate(a);
+  const g = x.createLinearGradient(0, 0, len, 0); g.addColorStop(0, pal.leafDark); g.addColorStop(1, pal.leaf);
+  x.fillStyle = g; x.beginPath(); x.moveTo(0, 0);
+  x.bezierCurveTo(len * .3, -wid, len * .7, -wid * .7, len, 0);
+  x.bezierCurveTo(len * .7, wid * .7, len * .3, wid, 0, 0); x.fill(); x.restore();
+}
+function bloom(x, h, pal, rng){
+  x.save(); x.translate(h.x, h.y); x.rotate((rng() - .5) * .5); x.scale(1, .72 + rng() * .15);
+  const n = 5 + Math.floor(rng() * 3), rot = rng() * Math.PI;
+  for (let i = 0; i < n; i++){
+    const a = i / n * Math.PI * 2 + rot + (rng() - .5) * .45, len = h.r * (.75 + rng() * .45), wid = len * (.5 + rng() * .25);
+    x.save(); x.rotate(a);
+    const g = x.createRadialGradient(0, 0, 0, 0, 0, len);
+    g.addColorStop(0, pal.core); g.addColorStop(.45, pal.petal); g.addColorStop(1, pal.light);
+    x.fillStyle = g; x.globalAlpha = .92; petalPath(x, len, wid); x.fill(); x.restore();
+  }
+  x.globalAlpha = 1; x.fillStyle = pal.core; x.beginPath(); x.arc(0, 0, h.r * .14, 0, Math.PI * 2); x.fill();
+  x.restore();
+}
+function bud(x, h, pal, rng){
+  x.save(); x.translate(h.x, h.y); x.rotate((rng() - .5) * .6);
+  for (let i = 0; i < 3; i++){
+    x.save(); x.rotate(-Math.PI / 2 + (i - 1) * .32);
+    const g = x.createLinearGradient(0, 0, h.r * 1.5, 0); g.addColorStop(0, pal.core); g.addColorStop(1, i === 1 ? pal.light : pal.bud);
+    x.fillStyle = g; petalPath(x, h.r * (1.3 + rng() * .3), h.r * .45, .9); x.fill(); x.restore();
+  }
+  for (let i = 0; i < 3; i++) leaf(x, 0, h.r * .35, -Math.PI / 2 + (i - 1) * .55, h.r * 1.05, h.r * .28, pal);
+  x.restore();
+}
+function drawPlant(pal, seed){
+  const c = canvas(SW, SH), x = c.getContext('2d'), rng = mulberry(seed);
+  const base = { x: SW * (.44 + rng() * .1), y: SH * 1.04 };
+  const heads = [
+    { x: SW * (.6 + (rng() - .5) * .12), y: SH * (.33 + (rng() - .5) * .06), r: SW * .26, open: true },
+    { x: SW * (.24 + (rng() - .5) * .08), y: SH * (.57 + (rng() - .5) * .06), r: SW * .15 },
+    { x: SW * (.3 + (rng() - .5) * .08), y: SH * (.25 + (rng() - .5) * .05), r: SW * .085 },
+  ];
+  if (rng() < .65) heads.push({ x: SW * (.8 + (rng() - .5) * .08), y: SH * (.52 + (rng() - .5) * .08), r: SW * .1 });
+  x.lineCap = 'round';
+  heads.forEach((h, i) => {
+    const cp = { x: (base.x + h.x) / 2 + (rng() - .5) * SW * .25, y: (base.y + h.y) / 2 + SH * .05 };
+    const end = { x: h.x, y: h.y + h.r * .4 };
+    x.strokeStyle = pal.stem; x.lineWidth = SW * .008 + h.r * .05;
+    x.beginPath(); x.moveTo(base.x, base.y); x.quadraticCurveTo(cp.x, cp.y, end.x, end.y); x.stroke();
+    const nLeaves = 1 + Math.floor(rng() * 2);
+    for (let k = 0; k < nLeaves; k++){
+      const t = .3 + rng() * .4, u = 1 - t;
+      const px = u * u * base.x + 2 * u * t * cp.x + t * t * end.x, py = u * u * base.y + 2 * u * t * cp.y + t * t * end.y;
+      const tx = 2 * u * (cp.x - base.x) + 2 * t * (end.x - cp.x), ty = 2 * u * (cp.y - base.y) + 2 * t * (end.y - cp.y);
+      const side = (k + i) % 2 ? 1 : -1, len = SW * (.12 + rng() * .1);
+      leaf(x, px, py, Math.atan2(ty, tx) + side * (.55 + rng() * .5), len, len * .27, pal);
+    }
+  });
+  heads.forEach(h => h.open ? bloom(x, h, pal, rng) : bud(x, h, pal, rng));
+  return c;
+}
+function photoSource(img){
+  const c = canvas(SW, SH), x = c.getContext('2d');
+  const s = Math.max(SW / img.width, SH / img.height), w = img.width * s, h = img.height * s;
+  x.drawImage(img, (SW - w) / 2, (SH - h) / 2, w, h); return c;
+}
+
+// ---------- state
+const state = { palette: 'coquelicot', plantSeed: 7, glitchSeed: 11, photo: null };
+let src = null, layers = null, layerKey = '';
+const grainTex = (() => { const c = canvas(W, H), x = c.getContext('2d'), d = x.createImageData(W, H), r = mulberry(99);
+  for (let i = 0; i < d.data.length; i += 4){ const v = 128 + (r() - .5) * 255 * (r() < .985 ? .55 : 1.4);
+    d.data[i] = d.data[i+1] = d.data[i+2] = v; d.data[i+3] = 255; } x.putImageData(d, 0, 0); return c; })();
+
+function params(){ return {
+  blur: +$('blur').value, density: +$('density').value / 100, row: +$('row').value,
+  smear: +$('smear').value / 100, grain: +$('grain').value / 100,
+  name: $('name').value, pid: $('pid').value, brand: $('brand').value }; }
+
+// Build the four blurred layers (background heavy/light, card heavy/light) at half scale.
+function buildLayers(p){
+  const pal = PALETTES[state.palette], rng = mulberry(state.plantSeed * 31 + 5);
+  const place = (target, z, ox, oy) => { const x = target.getContext('2d'); const dw = SW * z * S, dh = SH * z * S; x.drawImage(src, ox * S, oy * S, dw, dh); };
+  // card placement
+  const cz = CARD.w * 1.12 / SW, cx = CARD.x + (CARD.w - SW * cz) / 2 + (rng() - .5) * CARD.w * .08, cy = CARD.y + CARD.h * .17;
+  // background placement: zoomed in, anchored so a petal mass spills around the card
+  const bz = pal.bgZoom * W / SW, bx = -SW * bz * (.15 + rng() * .35), by = -SH * bz * (.02 + rng() * .3);
+  const base = (z, ox, oy) => { const c = canvas(W * S, H * S); place(c, z, ox, oy); return c; };
+  const cardRaw = base(cz, cx, cy), bgRaw = base(bz, bx, by);
+  const L = {
+    cardHeavy: blurCanvas(cardRaw, p.blur * S), cardLight: blurCanvas(cardRaw, p.blur * S * .3),
+    bgHeavy: blurCanvas(bgRaw, p.blur * S * 1.9), bgLight: blurCanvas(bgRaw, p.blur * S * .5),
+    cardRaw,
+  };
+  L.cardInk = inkMap(L.cardHeavy); L.bgInk = inkMap(L.bgHeavy);
+  return L;
+}
+function inkMap(c){ return { w: c.width, h: c.height, d: c.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, c.width, c.height).data }; }
+function ink(m, x, y){
+  const ix = Math.min(m.w - 1, Math.max(0, Math.round(x * S))), iy = Math.min(m.h - 1, Math.max(0, Math.round(y * S)));
+  const i = (iy * m.w + ix) * 4, r = m.d[i], g = m.d[i+1], b = m.d[i+2], a = m.d[i+3] / 255;
+  const chroma = (Math.max(r, g, b) - Math.min(r, g, b)) / 255, dark = 1 - (r * .3 + g * .59 + b * .11) / 255;
+  return a * Math.min(1, chroma * 1.5 + dark * .5);
+}
+
+// Grid-aligned glitch: runs of narrow columns on tall rows, only where the blurred image has colour.
+function glitch(x, heavy, light, inkM, reg, uw, rh, p, rng){
+  const cols = Math.ceil(reg.w / uw), rows = Math.ceil(reg.h / rh);
+  for (let r = 0; r < rows; r++){
+    let c = 0;
+    while (c < cols){
+      const cx = reg.x + (c + .5) * uw, cy = reg.y + (r + .5) * rh;
+      const prob = p.density * smooth(.18, .55, ink(inkM, cx, cy));
+      if (rng() < prob){
+        const len = Math.min(cols - c, 1 + Math.floor(Math.pow(rng(), 1.7) * 11));
+        const bx = reg.x + c * uw, by = reg.y + r * rh, bw = len * uw, bh = rh;
+        x.drawImage(heavy, bx * S, by * S, bw * S, bh * S, bx, by, bw, bh);
+        const m = rng();
+        if (m < p.smear){                              // one row of pixels stretched down the block
+          const sy = by + rng() * bh * .6;
+          x.drawImage(light, bx * S, sy * S, bw * S, 1, bx, by, bw, bh);
+        } else if (m < p.smear + (1 - p.smear) * .2){  // displaced by a row
+          const dy = (rng() < .5 ? -1 : 1) * bh;
+          x.drawImage(light, bx * S, (by + dy) * S, bw * S, bh * S, bx, by, bw, bh);
+        } else {                                       // same place, much less blur
+          x.drawImage(light, bx * S, by * S, bw * S, bh * S, bx, by, bw, bh);
+        }
+        c += len + (rng() < .45 ? 0 : 1 + Math.floor(rng() * 2));
+      } else c++;
+    }
+  }
+}
+
+function roundRect(x, r, rad){ x.beginPath(); x.roundRect ? x.roundRect(r.x, r.y, r.w, r.h, rad) : x.rect(r.x, r.y, r.w, r.h); }
+
+function mark(x, cx, cy, s){
+  // small pixel-tulip mark: a cup of squares on a thin stem with one leaf
+  x.fillStyle = '#141210';
+  [[-1,-1],[1,-1],[-1,0],[0,0],[1,0]].forEach(([i,j]) => x.fillRect(cx + i * s - s/2, cy + j * s - s * 1.6, s, s));
+  x.fillRect(cx - s * .17, cy - s * .6, s * .34, s * 1.9);
+  x.fillRect(cx + s * .17, cy + s * .25, s * .7, s * .34);
+}
+
+let snapshots = {};
+function render(){
+  const p = params(), pal = PALETTES[state.palette];
+  const key = [state.palette, state.plantSeed, state.photo ? 'photo' : 'gen', p.blur].join('|');
+  if (key !== layerKey){ layers = buildLayers(p); layerKey = key; }
+  const L = layers, cv = $('poster'), x = cv.getContext('2d');
+  const rng = mulberry(state.glitchSeed);
+  x.save(); x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1;
+
+  // background
+  x.fillStyle = pal.ground; x.fillRect(0, 0, W, H);
+  x.drawImage(L.bgHeavy, 0, 0, W, H);
+  glitch(x, L.bgHeavy, L.bgLight, L.bgInk, { x: 0, y: 0, w: W, h: H }, W / 13, p.row * 2.2, { ...p, density: p.density * .9 }, rng);
+
+  // card
+  x.save(); roundRect(x, CARD, 9); x.clip();
+  x.fillStyle = CREAM; x.fillRect(CARD.x, CARD.y, CARD.w, CARD.h);
+  x.drawImage(L.cardHeavy, 0, 0, W, H);
+  // a soft wash so the fog stays airy like frosted glass
+  x.fillStyle = 'rgba(245,241,235,.12)'; x.fillRect(CARD.x, CARD.y, CARD.w, CARD.h);
+  const gridTop = CARD.y + CARD.w * .3;
+  glitch(x, L.cardHeavy, L.cardLight, L.cardInk, { x: CARD.x, y: gridTop, w: CARD.w, h: CARD.y + CARD.h - gridTop }, CARD.w / 58, p.row, p, rng);
+  x.restore();
+
+  snapshots.blocks = cropCard(cv);
+
+  // grain
+  if (p.grain > 0){ x.globalCompositeOperation = 'overlay'; x.globalAlpha = p.grain; x.drawImage(grainTex, 0, 0);
+    x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; }
+
+  // type
+  const cw = CARD.w, L0 = CARD.x + cw * .06;
+  const ls = v => { if ('letterSpacing' in x) x.letterSpacing = v; };
+  x.fillStyle = '#141210'; x.textBaseline = 'alphabetic'; x.textAlign = 'left';
+  x.font = `500 ${cw * .108}px "Inter Tight", "Helvetica Neue", Arial, sans-serif`; ls(`${-cw * .004}px`);
+  x.fillText(p.name || ' ', L0, CARD.y + cw * .143, cw * .88);
+  x.fillStyle = 'rgba(20,18,16,.09)'; x.fillRect(L0, CARD.y + cw * .199, cw * .88, 2);
+  x.fillStyle = '#86807A'; x.font = `400 ${cw * .036}px "JetBrains Mono", ui-monospace, Menlo, monospace`; ls('0px');
+  x.fillText('PROFILE ID', CARD.x + cw * .066, CARD.y + cw * .273);
+  x.textAlign = 'right'; x.fillText(p.pid, CARD.x + cw * .935, CARD.y + cw * .273);
+  x.textAlign = 'left'; x.fillStyle = '#141210';
+  x.font = `500 ${cw * .078}px "Inter Tight", "Helvetica Neue", Arial, sans-serif`; ls(`${-cw * .003}px`);
+  x.fillText(p.brand, L0, CARD.y + CARD.h - cw * .07);
+  ls('0px');
+  mark(x, CARD.x + cw * .918, CARD.y + CARD.h - cw * .1, cw * .017);
+  x.restore();
+
+  drawThumbs();
+}
+
+function cropCard(cv){ const c = canvas(300, 400), x = c.getContext('2d');
+  const h = CARD.w * 4 / 3, y = CARD.y + CARD.h - h; x.drawImage(cv, CARD.x, y, CARD.w, h, 0, 0, 300, 400); return c; }
+function drawThumbs(){
+  const h = CARD.w * 4 / 3, y = CARD.y + CARD.h - h;
+  const fromLayer = (layer, id) => { const x = $(id).getContext('2d'); x.fillStyle = CREAM; x.fillRect(0, 0, 300, 400);
+    x.drawImage(layer, CARD.x * S, y * S, CARD.w * S, h * S, 0, 0, 300, 400); };
+  fromLayer(layers.cardRaw, 't1'); fromLayer(layers.cardHeavy, 't2');
+  $('t3').getContext('2d').drawImage(snapshots.blocks, 0, 0);
+  $('t4').getContext('2d').drawImage(cropCard($('poster')), 0, 0);
+}
+
+// ---------- UI
+function refreshSource(){ src = state.photo ? photoSource(state.photo) : drawPlant(PALETTES[state.palette], state.plantSeed); layerKey = ''; }
+function outputs(){
+  $('o-blur').textContent = $('blur').value + ' px'; $('o-density').textContent = $('density').value + ' %';
+  $('o-row').textContent = $('row').value + ' px'; $('o-smear').textContent = $('smear').value + ' %'; $('o-grain').textContent = $('grain').value + ' %';
+}
+const presetsEl = $('presets');
+Object.entries(PALETTES).forEach(([k, pal]) => {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'preset'; b.dataset.k = k;
+  b.innerHTML = `<i style="background:linear-gradient(135deg,${pal.light},${pal.petal} 55%,${pal.leaf})"></i>${pal.label}`;
+  b.onclick = () => { state.palette = k; state.photo = null; $('pid').value = String(100000 + Math.floor(Math.random() * 9000000));
+    syncPresets(); refreshSource(); render(); };
+  presetsEl.appendChild(b);
+});
+function syncPresets(){ presetsEl.querySelectorAll('.preset').forEach(b => b.setAttribute('aria-pressed', String(!state.photo && b.dataset.k === state.palette))); }
+
+let raf = 0; const schedule = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { outputs(); render(); }); };
+['blur','density','row','smear','grain','name','pid','brand'].forEach(id => $(id).addEventListener('input', schedule));
+$('newPlant').onclick = () => { state.photo = null; state.plantSeed = Math.floor(Math.random() * 1e6); syncPresets(); refreshSource(); render(); };
+$('reshuffle').onclick = () => { state.glitchSeed = Math.floor(Math.random() * 1e6); render(); };
+
+function loadFile(f){
+  if (!f || !f.type.startsWith('image/')) return;
+  const url = URL.createObjectURL(f), img = new Image();
+  img.onload = () => { state.photo = img; syncPresets(); refreshSource(); render(); URL.revokeObjectURL(url); };
+  img.src = url;
+}
+$('file').addEventListener('change', e => loadFile(e.target.files[0]));
+const stage = document.querySelector('.stage');
+stage.addEventListener('dragover', e => e.preventDefault());
+stage.addEventListener('drop', e => { e.preventDefault(); loadFile(e.dataTransfer.files[0]); });
+
+let timer = 0;
+$('anim').addEventListener('change', e => {
+  clearInterval(timer);
+  if (e.target.checked) timer = setInterval(() => { state.glitchSeed = (state.glitchSeed * 1103515245 + 12345) % 2147483647; render(); }, 650);
+});
+
+syncPresets(); outputs(); refreshSource();
+render();
+const fontsReady = Promise.all([
+  document.fonts.load('500 80px "Inter Tight"'), document.fonts.load('400 30px "JetBrains Mono"')
+]).catch(() => {});
+fontsReady.then(() => render());
+})();
+</script>
+</body>
+</html>
