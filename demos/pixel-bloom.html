@@ -98,10 +98,10 @@ button:focus-visible,label.act:focus-within,input:focus-visible{outline:2px soli
 
       <div class="group">
         <div class="eyebrow">Filtre</div>
-        <label class="slider"><span>Flou</span><output id="o-blur"></output><input type="range" id="blur" min="8" max="70" value="34"></label>
-        <label class="slider"><span>Densité des blocs</span><output id="o-density"></output><input type="range" id="density" min="0" max="100" value="45"></label>
+        <label class="slider"><span>Flou</span><output id="o-blur"></output><input type="range" id="blur" min="4" max="60" value="15"></label>
+        <label class="slider"><span>Densité des blocs</span><output id="o-density"></output><input type="range" id="density" min="0" max="100" value="70"></label>
         <label class="slider"><span>Hauteur de ligne</span><output id="o-row"></output><input type="range" id="row" min="30" max="140" value="75"></label>
-        <label class="slider"><span>Part d'étirement</span><output id="o-smear"></output><input type="range" id="smear" min="0" max="100" value="40"></label>
+        <label class="slider"><span>Part d'étirement</span><output id="o-smear"></output><input type="range" id="smear" min="0" max="100" value="25"></label>
         <label class="slider"><span>Grain</span><output id="o-grain"></output><input type="range" id="grain" min="0" max="60" value="22"></label>
       </div>
 
@@ -122,8 +122,8 @@ button:focus-visible,label.act:focus-within,input:focus-visible{outline:2px soli
     <h2>La recette du filtre</h2>
     <div class="steps">
       <div class="step"><canvas id="t1" width="300" height="400"></canvas><b>1 · Source</b><p>Une photo de fleur détourée, posée sur le fond crème de la carte.</p></div>
-      <div class="step"><canvas id="t2" width="300" height="400"></canvas><b>2 · Flou fort</b><p>Flou gaussien d'environ 3 % de la largeur : <code>filter: blur(34px)</code>. La forme devient une brume colorée.</p></div>
-      <div class="step"><canvas id="t3" width="300" height="400"></canvas><b>3 · Blocs sur grille</b><p>Grille de colonnes fines et de lignes hautes. Là où la couleur est dense, des segments affichent une version peu floutée, décalée, ou une seule ligne de pixels étirée vers le bas.</p></div>
+      <div class="step"><canvas id="t2" width="300" height="400"></canvas><b>2 · Flou doux</b><p>Flou gaussien d'environ 1,5 % de la largeur : <code>filter: blur(15px)</code>. Les contours fondent mais la silhouette de la plante reste lisible.</p></div>
+      <div class="step"><canvas id="t3" width="300" height="400"></canvas><b>3 · Blocs sur grille</b><p>Grille de colonnes fines et de lignes hautes. Les blocs suivent la silhouette (pétales, boutons, tiges) et se regroupent en grappes. Ils montrent la même zone presque nette, parfois décalée ou étirée vers le bas.</p></div>
       <div class="step"><canvas id="t4" width="300" height="400"></canvas><b>4 · Grain et typo</b><p>Bruit monochrome en mode <code>overlay</code>, puis la typo nette par-dessus : grotesque serrée et mono pour l'identifiant.</p></div>
     </div>
   </section>
@@ -182,16 +182,20 @@ function leaf(x, px, py, a, len, wid, pal){
   x.bezierCurveTo(len * .7, wid * .7, len * .3, wid, 0, 0); x.fill(); x.restore();
 }
 function bloom(x, h, pal, rng){
-  x.save(); x.translate(h.x, h.y); x.rotate((rng() - .5) * .5); x.scale(1, .72 + rng() * .15);
-  const n = 5 + Math.floor(rng() * 3), rot = rng() * Math.PI;
-  for (let i = 0; i < n; i++){
-    const a = i / n * Math.PI * 2 + rot + (rng() - .5) * .45, len = h.r * (.75 + rng() * .45), wid = len * (.5 + rng() * .25);
+  // side view: petals fan upward from a cup, each with its own gradient so the shapes stay distinct
+  x.save(); x.translate(h.x, h.y); x.rotate((rng() - .5) * .4);
+  const n = 5 + Math.floor(rng() * 3), spread = Math.PI * (.85 + rng() * .15);
+  const order = [...Array(n).keys()].sort(() => rng() - .5);
+  for (const i of order){
+    const a = -Math.PI / 2 - spread / 2 + spread * (i + .5) / n + (rng() - .5) * .25;
+    const len = h.r * (.85 + rng() * .4) * (1 - Math.abs(Math.cos(a)) * .15), wid = len * (.38 + rng() * .14);
     x.save(); x.rotate(a);
-    const g = x.createRadialGradient(0, 0, 0, 0, 0, len);
-    g.addColorStop(0, pal.core); g.addColorStop(.45, pal.petal); g.addColorStop(1, pal.light);
-    x.fillStyle = g; x.globalAlpha = .92; petalPath(x, len, wid); x.fill(); x.restore();
+    const g = x.createLinearGradient(0, 0, len, 0);
+    g.addColorStop(0, pal.core); g.addColorStop(.35, pal.petal); g.addColorStop(.85, pal.light); g.addColorStop(1, pal.petal);
+    x.fillStyle = g; petalPath(x, len, wid, 1.15); x.fill(); x.restore();
   }
-  x.globalAlpha = 1; x.fillStyle = pal.core; x.beginPath(); x.arc(0, 0, h.r * .14, 0, Math.PI * 2); x.fill();
+  // green calyx under the cup
+  for (let i = 0; i < 3; i++) leaf(x, 0, h.r * .1, Math.PI / 2 + (i - 1) * .7, h.r * .45, h.r * .15, pal);
   x.restore();
 }
 function bud(x, h, pal, rng){
@@ -260,11 +264,11 @@ function buildLayers(p){
   const base = (z, ox, oy) => { const c = canvas(W * S, H * S); place(c, z, ox, oy); return c; };
   const cardRaw = base(cz, cx, cy), bgRaw = base(bz, bx, by);
   const L = {
-    cardHeavy: blurCanvas(cardRaw, p.blur * S), cardLight: blurCanvas(cardRaw, p.blur * S * .3),
-    bgHeavy: blurCanvas(bgRaw, p.blur * S * 1.9), bgLight: blurCanvas(bgRaw, p.blur * S * .5),
+    cardHeavy: blurCanvas(cardRaw, p.blur * S), cardLight: blurCanvas(cardRaw, Math.max(1.5, p.blur * S * .22)),
+    bgHeavy: blurCanvas(bgRaw, p.blur * S * 2.6), bgLight: blurCanvas(bgRaw, p.blur * S * .9),
     cardRaw,
   };
-  L.cardInk = inkMap(L.cardHeavy); L.bgInk = inkMap(L.bgHeavy);
+  L.cardInk = inkMap(L.cardLight); L.bgInk = inkMap(L.bgLight);
   return L;
 }
 function inkMap(c){ return { w: c.width, h: c.height, d: c.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, c.width, c.height).data }; }
@@ -276,15 +280,24 @@ function ink(m, x, y){
 }
 
 // Grid-aligned glitch: runs of narrow columns on tall rows, only where the blurred image has colour.
+// Smooth random field used to gather blocks into clusters instead of spreading them evenly.
+function clusterField(rng, nx, ny){
+  const g = Array.from({ length: (nx + 1) * (ny + 1) }, () => rng());
+  return (u, v) => { const x = Math.min(nx - 1e-6, Math.max(0, u * nx)), y = Math.min(ny - 1e-6, Math.max(0, v * ny));
+    const i = Math.floor(x), j = Math.floor(y), fx = x - i, fy = y - j, a = g[j * (nx + 1) + i], b = g[j * (nx + 1) + i + 1],
+      c = g[(j + 1) * (nx + 1) + i], d = g[(j + 1) * (nx + 1) + i + 1], sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
+    return (a + (b - a) * sx) * (1 - sy) + (c + (d - c) * sx) * sy; };
+}
 function glitch(x, heavy, light, inkM, reg, uw, rh, p, rng){
+  const field = clusterField(rng, 4, 5);
   const cols = Math.ceil(reg.w / uw), rows = Math.ceil(reg.h / rh);
   for (let r = 0; r < rows; r++){
     let c = 0;
     while (c < cols){
       const cx = reg.x + (c + .5) * uw, cy = reg.y + (r + .5) * rh;
-      const prob = p.density * smooth(.18, .55, ink(inkM, cx, cy));
+      const prob = p.density * smooth(.22, .6, ink(inkM, cx, cy)) * smooth(.3, .7, field((cx - reg.x) / reg.w, (cy - reg.y) / reg.h));
       if (rng() < prob){
-        const len = Math.min(cols - c, 1 + Math.floor(Math.pow(rng(), 1.7) * 11));
+        const len = Math.min(cols - c, 1 + Math.floor(Math.pow(rng(), 2) * 8));
         const bx = reg.x + c * uw, by = reg.y + r * rh, bw = len * uw, bh = rh;
         x.drawImage(heavy, bx * S, by * S, bw * S, bh * S, bx, by, bw, bh);
         const m = rng();
