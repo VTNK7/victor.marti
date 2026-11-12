@@ -1,5 +1,5 @@
 /* ===== Jetons — V2 « rose / lavande » : la DA paradigm.xyz (serif + semi-mono), le bleu reste l'action,
-   rose et lavande pâles en complément, verre dépoli, visuels « Pixel Bloom » ===== */
+   rose et lavande pâles en complément, visuels « Pixel Bloom » en images fixes ===== */
 :root {
   --fond: #FCFAFF;                    /* blanc légèrement lavande */
   --couche: rgba(230, 222, 250, .7);  /* pastilles lavande : boutons, tags */
@@ -9,11 +9,7 @@
   --accent: #4200FF;                  /* bleu : action principale */
   /* V2 : rose / lavande pâles, complémentaires du bleu */
   --lavande: #E6DEFA;                 /* lavande pâle : fonds de pastilles, verre */
-  --lavande-vive: #B9A7F2;            /* lavande soutenue : traits, points */
   --rose: #F9DDE8;                    /* rose poudré : reflets, survols */
-  --rose-vif: #E7A3C0;                /* rose soutenu : accents secondaires */
-  --verre: rgba(255, 255, 255, .55);  /* panneaux en verre dépoli */
-  --verre-bord: rgba(255, 255, 255, .8);
   --trait: rgba(0, 0, 0, .08);        /* séparateurs, graduations */
   --serif: Newsreader, Georgia, 'Times New Roman', serif;
   --mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
@@ -47,7 +43,7 @@
 /* ===== Base ===== */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-padding-top: var(--e5); }
-body { background: radial-gradient(120% 80% at 85% 0%, #F7E6F0 0%, transparent 55%), radial-gradient(90% 70% at 0% 100%, #ECE6FB 0%, transparent 60%), var(--fond); background-attachment: fixed; color: var(--texte); font: 400 var(--t-corps)/1.25 var(--serif); font-optical-sizing: auto; }
+body { background: var(--fond); color: var(--texte); font: 400 var(--t-corps)/1.25 var(--serif); font-optical-sizing: auto; }
 a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 ::selection { background: var(--rose); color: var(--texte); }
 :focus-visible { outline: 2px solid #CCCCCC; outline-offset: 2px; }
@@ -64,14 +60,8 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; 
    via --respire-duree / --respire-delai pour que les bords ne bougent pas ensemble. */
 .halo { position: relative; }
 .halo::before {
-  content: ''; position: absolute; inset: -56px; z-index: -1; pointer-events: none;
-  /* Verre dépoli aux bords fondus : deux dégradés croisés effacent le contour du flou */
-  background: rgba(252, 250, 255, .62);
-  backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2);
-  --fondu: linear-gradient(to right, transparent, #000 56px, #000 calc(100% - 56px), transparent),
-           linear-gradient(to bottom, transparent, #000 56px, #000 calc(100% - 56px), transparent);
-  -webkit-mask-image: var(--fondu); -webkit-mask-composite: source-in;
-  mask-image: var(--fondu); mask-composite: intersect;
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: var(--fond); box-shadow: 0 0 48px 32px var(--fond);
   animation: respire var(--respire-duree, 11s) ease-in-out var(--respire-delai, 0s) infinite;
   will-change: transform;
 }
@@ -288,36 +278,16 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
   footer { flex-direction: column; gap: 4px; }
 }
 
-/* ===== V2 : visuels « Pixel Bloom » =====
-   Une fleur très floue, découpée par des blocs sur grille (cf. pixelbloom.js), avec une typo nette par-dessus.
-   Ce sont des objets posés dans la page, pas un fond. */
-.bloom {
-  position: relative; overflow: hidden; background: var(--lavande);
-}
-.bloom canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-
-/* Carte du hero : nom en serif, identifiant en semi-mono, petite tulipe en pixels */
-.bloom-hero { aspect-ratio: 4 / 5; margin-top: var(--e6); max-width: 440px; }
-.bloom-texte {
-  position: absolute; inset: 0; display: flex; flex-direction: column; padding: 7% 7% 6%;
-  color: var(--texte); container-type: inline-size;
-}
-.bloom-nom { font: 400 clamp(28px, 14cqi, 60px)/1 var(--serif); letter-spacing: var(--serre); }
-.bloom-ligne {
-  display: flex; justify-content: space-between; gap: var(--e2); margin-top: 5%;
-  font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); text-transform: uppercase; color: var(--texte-discret);
-}
-.bloom-pied { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; }
-.bloom-marque { font: 400 clamp(20px, 8cqi, 34px)/1 var(--serif); letter-spacing: var(--serre); }
-.tulipe { width: 14px; height: 23px; fill: var(--texte); }
-
-/* ===== Offre ===== */
+/* ===== Offre =====
+   Chaque carte porte une image fixe « Pixel Bloom » (fleur floue découpée par des blocs sur grille),
+   rendue une fois pour toutes : aucun calcul dans le navigateur. */
 .offres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--goutiere); }
 .offre { display: flex; flex-direction: column; gap: var(--e2); }
 .offre .span-nom { margin-top: var(--e1); }
-.bloom-bande { aspect-ratio: 3 / 2; }
-.bloom-etiquette {
-  position: absolute; top: 10px; left: 10px; padding: 4px 6px; background: rgba(252, 250, 255, .8);
+.visuel { position: relative; background: var(--lavande); }
+.visuel img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; }
+.etiquette {
+  position: absolute; top: 10px; left: 10px; padding: 4px 6px; background: var(--fond);
   font: 400 var(--t-petit)/1 var(--mono); letter-spacing: var(--mono-ls);
 }
 .offre-details { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 6px var(--e2); margin-top: auto; padding-top: var(--e1); }
@@ -326,17 +296,8 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
 /* Contenu provisoire : en gris tant qu'il n'est pas remplacé */
 .a-completer { color: var(--texte-discret); }
 
-@media (min-width: 1024px) {
-  .hero              { grid-row: 1; }
-  .coin              { grid-row: 2; }
-  .bloom-hero        { grid-column: 9 / span 4; grid-row: 1 / span 2; align-self: start; margin-top: 0; justify-self: end; width: 100%; }
-  #offre             { grid-column: 1 / -1; }
-}
+@media (min-width: 1024px) { #offre { grid-column: 1 / -1; } }
 @media (max-width: 1023px) { .offres { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 640px) {
-  .bloom-hero { aspect-ratio: 5 / 4; max-width: none; margin-top: var(--e5); }
-  .bloom-nom  { font-size: 34px; }
-  .offres { grid-template-columns: 1fr; gap: var(--e6); }
-}
+@media (max-width: 640px)  { .offres { grid-template-columns: 1fr; gap: var(--e6); } }
 
-@media print { #ascii, .sommaire, .bloom canvas { display: none; } }
+@media print { #ascii, .sommaire, .visuel { display: none; } }
