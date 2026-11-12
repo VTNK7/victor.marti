@@ -1,5 +1,5 @@
 /* ===== Jetons — V2 « rose / lavande » : la DA paradigm.xyz (serif + semi-mono), le bleu reste l'action,
-   rose et lavande pâles en complément, feuillage flou et verre dépoli ===== */
+   rose et lavande pâles en complément, verre dépoli, visuels « Pixel Bloom » ===== */
 :root {
   --fond: #FCFAFF;                    /* blanc légèrement lavande */
   --couche: rgba(230, 222, 250, .7);  /* pastilles lavande : boutons, tags */
@@ -288,27 +288,56 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
   footer { flex-direction: column; gap: 4px; }
 }
 
-/* ===== V2 : feuillage flou en profondeur de champ =====
-   Des rameaux en silhouette, comme vus à travers un objectif ouvert : le plan proche est très flou,
-   le plan lointain l'est un peu moins. Seuls transform et opacity sont animés. */
-.feuillage { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.feuillage svg { color: #C9B9F5; position: absolute; display: block; transform-origin: 50% 100%; will-change: transform; }
-.feuillage .plan-loin   { filter: blur(6px);  opacity: .55; }
-.feuillage .plan-milieu { filter: blur(14px); opacity: .5; }
-.feuillage .plan-proche { filter: blur(28px); opacity: .6; }
-.feuillage .f1 { width: 46vw; max-width: 620px; right: -8vw; top: -6vh; --r: -158deg; animation: balance 17s ease-in-out infinite; }
-.feuillage .f2 { width: 38vw; max-width: 520px; left: -10vw; bottom: -14vh; --r: 18deg; animation: balance 21s ease-in-out -6s infinite; }
-.feuillage .f3 { width: 30vw; max-width: 420px; right: 4vw; bottom: -10vh; --r: -12deg; animation: balance 15s ease-in-out -3s infinite; }
-.feuillage .f4 { width: 64vw; max-width: 900px; left: -22vw; top: -22vh; --r: 150deg; animation: balance 24s ease-in-out -11s infinite; }
-@keyframes balance {
-  0%, 100% { transform: translateY(var(--dy, 0px)) rotate(var(--r)); }
-  50%      { transform: translateY(var(--dy, 0px)) rotate(calc(var(--r) + 3deg)) scale(1.02); }
+/* ===== V2 : visuels « Pixel Bloom » =====
+   Une fleur très floue, découpée par des blocs sur grille (cf. pixelbloom.js), avec une typo nette par-dessus.
+   Ce sont des objets posés dans la page, pas un fond. */
+.bloom {
+  position: relative; overflow: hidden; border-radius: 10px; background: var(--lavande);
+  box-shadow: 0 1px 2px rgba(66, 0, 255, .06), 0 24px 60px -28px rgba(66, 0, 255, .45);
 }
-@media (max-width: 640px) {
-  .feuillage .f1 { width: 90vw; right: -30vw; }
-  .feuillage .f2 { width: 80vw; left: -34vw; }
-  .feuillage .f3, .feuillage .f4 { display: none; }
-}
-@media (prefers-reduced-motion: reduce) { .feuillage svg { animation: none; transform: rotate(var(--r)); } }
+.bloom canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
-@media print { #ascii, .sommaire, .feuillage { display: none; } }
+/* Carte du hero : nom en serif, identifiant en semi-mono, petite tulipe en pixels */
+.bloom-hero { aspect-ratio: 4 / 5; margin-top: var(--e6); max-width: 440px; }
+.bloom-texte {
+  position: absolute; inset: 0; display: flex; flex-direction: column; padding: 7% 7% 6%;
+  color: var(--texte); container-type: inline-size;
+}
+.bloom-nom { font: 400 clamp(28px, 14cqi, 60px)/1 var(--serif); letter-spacing: var(--serre); padding-bottom: 4%; border-bottom: 1px solid rgba(0, 0, 0, .1); }
+.bloom-ligne {
+  display: flex; justify-content: space-between; gap: var(--e2); margin-top: 5%;
+  font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); text-transform: uppercase; color: var(--texte-discret);
+}
+.bloom-pied { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; }
+.bloom-marque { font: 400 clamp(20px, 8cqi, 34px)/1 var(--serif); letter-spacing: var(--serre); }
+.tulipe { width: 14px; height: 23px; fill: var(--texte); }
+
+/* ===== Offre ===== */
+.offres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--goutiere); }
+.offre { display: flex; flex-direction: column; gap: var(--e2); }
+.offre .span-nom { margin-top: var(--e1); }
+.bloom-bande { aspect-ratio: 3 / 2; }
+.bloom-etiquette {
+  position: absolute; top: 10px; left: 10px; padding: 4px 6px; background: rgba(252, 250, 255, .8);
+  font: 400 var(--t-petit)/1 var(--mono); letter-spacing: var(--mono-ls);
+}
+.offre-details { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 6px var(--e2); margin-top: auto; padding-top: var(--e2); border-top: 1px solid var(--lavande-vive); }
+.offre-details dt { font: 400 var(--t-petit)/1.5 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
+.offre-details dd { margin: 0; }
+/* Contenu provisoire : bien visible tant qu'il n'est pas remplacé */
+.a-completer { text-decoration: underline dashed var(--rose-vif) 1px; text-underline-offset: 4px; }
+
+@media (min-width: 1024px) {
+  .hero              { grid-row: 1; }
+  .coin              { grid-row: 2; }
+  .bloom-hero        { grid-column: 9 / span 4; grid-row: 1 / span 2; align-self: start; margin-top: 0; justify-self: end; width: 100%; }
+  #offre             { grid-column: 1 / -1; }
+}
+@media (max-width: 1023px) { .offres { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .bloom-hero { aspect-ratio: 5 / 4; max-width: none; margin-top: var(--e5); }
+  .bloom-nom  { font-size: 34px; }
+  .offres { grid-template-columns: 1fr; gap: var(--e6); }
+}
+
+@media print { #ascii, .sommaire, .bloom canvas { display: none; } }
