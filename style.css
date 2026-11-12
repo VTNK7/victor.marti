@@ -286,7 +286,7 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
   position: absolute; top: 10px; left: 10px; padding: 4px 6px; background: var(--fond);
   font: 400 var(--t-petit)/1 var(--mono); letter-spacing: var(--mono-ls);
 }
-.offre-details { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 6px var(--e2); margin-top: auto; padding-top: var(--e1); }
+.offre-details { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 6px var(--e2); margin-top: auto; padding-top: var(--e1); }
 .offre-details dt { font: 400 var(--t-petit)/1.5 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
 .offre-details dd { margin: 0; }
 /* Contenu provisoire : en gris tant qu'il n'est pas remplacé */
