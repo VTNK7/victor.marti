@@ -1,7 +1,7 @@
 /* ===== Jetons — V2 « rose / lavande » : la DA paradigm.xyz (serif + semi-mono), le bleu reste l'action,
    rose et lavande pâles en complément, visuels « Pixel Bloom » en images fixes ===== */
 :root {
-  --fond: #FCFAFF;                    /* blanc légèrement lavande */
+  --fond: #FFFFFF;                    /* blanc neutre : la couleur vient des surfaces, pas du fond */
   --couche: rgba(230, 222, 250, .7);  /* pastilles lavande : boutons, tags */
   --couche-survol: #F4D3E1;          /* survol rosé */
   --texte: #000000;
@@ -9,7 +9,13 @@
   --accent: #4200FF;                  /* bleu : action principale */
   /* V2 : rose / lavande pâles, complémentaires du bleu */
   --lavande: #E6DEFA;                 /* lavande pâle : fonds des visuels */
-  --lavande-clair: #F1ECFD;           /* couleur secondaire : panneaux des expériences */
+  /* Surface des expériences : un seul pas au-dessus du fond, dans la teinte du bleu d'action.
+     Sur cette surface, tout reste dans la même famille : étiquettes un pas plus foncées, textes secondaires
+     en violet-gris assez sombre pour garder un contraste AA (≥ 4,5:1). */
+  --lavande-clair: #F3F0FD;           /* surface des panneaux */
+  --lavande-tag: #E4DDFB;             /* étiquettes sur la surface */
+  --lavande-encre: #2B1D78;           /* texte des étiquettes */
+  --lavande-discret: #554E72;         /* textes secondaires sur la surface */
   --rose: #F9DDE8;                    /* rose poudré : reflets, survols */
   --trait: rgba(0, 0, 0, .08);        /* séparateurs, graduations */
   --serif: Newsreader, Georgia, 'Times New Roman', serif;
@@ -150,12 +156,15 @@ section .titre::before {
 .span       { display: grid; grid-template-columns: var(--meta, 200px) minmax(0, 1fr); column-gap: var(--e4); }
 /* Chaque expérience sur un panneau lavande clair, angles droits, sans ombre ni bordure */
 .span       { padding: var(--e4); background: var(--lavande-clair); }
-.span .tags span { background: var(--fond); }  /* les pastilles restent visibles sur le lavande */
+.span { --texte-discret: var(--lavande-discret); }
+.span .tags { gap: 4px; }
+.span .tags span { height: 24px; padding: 0 8px; background: var(--lavande-tag); color: var(--lavande-encre); }
 .span-meta  { display: flex; flex-direction: column; gap: var(--e1); padding-top: 4px; }
-.date       { font: 400 var(--t-corps)/1.25 var(--mono); letter-spacing: var(--mono-ls); }
+.date       { font: 400 var(--t-petit)/1.35 var(--mono); letter-spacing: var(--mono-ls); }
 .client     { font: 400 var(--t-petit)/1.35 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
 .span-corps { display: flex; flex-direction: column; gap: var(--e3); }
 .span-nom   { font: 400 var(--t-titre-s)/1.2 var(--serif); letter-spacing: -.01em; }
+.span .span-nom { font-size: 24px; letter-spacing: -.02em; }
 
 /* Détail d'une mission : replié sur mobile (résumé seul), toujours ouvert sur grand écran (cf. main.js) */
 .detail > summary ~ * { margin-top: var(--e3); }
@@ -166,7 +175,7 @@ section .titre::before {
 
 /* Avant / Après : libellé en semi-mono aligné à gauche, phrase en serif */
 .avant-apres { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 10px var(--e2); max-width: 60ch; }
-.avant-apres dt { padding-top: 3px; font: 400 var(--t-petit)/1.35 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
+.avant-apres dt { padding-top: 4px; font: 400 11px/1.35 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--texte-discret); }
 .avant-apres dd { margin: 0; }
 
 /* ===== Chiffres-clés : valeur en serif, libellé en semi-mono ===== */
@@ -203,6 +212,7 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
 /* ===== Mobile ===== */
 @media (max-width: 640px) {
   :root { --texte-discret: #57536A; }
+  .span .span-nom { font-size: var(--t-titre-s); }
   main { padding-top: var(--e7); }
   body { line-height: 1.35; }
 
