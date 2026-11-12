@@ -87,48 +87,127 @@ document.querySelectorAll('[data-rdv]').forEach(lien => {
   maj();
 })();
 
-/* Fond ASCII : des signaux superposés qui ondulent lentement, comme des séries de métriques.
-   La vague couvre tout l'écran ; ce sont les halos des blocs (CSS) qui dégagent le contenu. */
-(function fondAscii() {
-  const el = document.getElementById('ascii');
-  const RAMPE = ' .·:-=+*#';
-  const CHAR_L = 7.2, CHAR_H = 14; /* taille d'un caractère en px (cf. #ascii) */
-  const INTERVALLE = 100;          /* 10 images/s sur tous les formats */
-  let cols = 0, rows = 0;
+/* Fond : une trame fixe de points, traversée lentement par un sillage autonome.
+   Le texte n'a pas de fond : les cellules sous les blocs de texte restent vides, et le sillage
+   est repoussé par ces zones (champ de distance), si bien qu'il les contourne de lui-même.
+   Dessin sur canevas avec un atlas de glyphes, 10 images/s, en pause quand l'onglet est caché.
+   Figé (trame seule) sur mobile et quand l'utilisateur réduit les animations. */
+(function fond() {
+  const cv = document.getElementById('fond');
+  const ctx = cv.getContext('2d');
+  const CW = 7.2, CH = 14;          /* une cellule = un caractère de 12 px en DM Mono */
+  const RAMPE = '·:+';
+  const COULEUR = 'rgba(66, 0, 255, .13)';
+  const INTERVALLE = 100;
+  const MARGE = 1;                  /* cellules laissées libres autour du texte */
+  const TEXTE = 'h1, h2, h3, p, dt, dd, .chiffres li, .tags span, .bouton, .date, .client, .spec li, .mail, .coordonnees a, .sommaire li, .visuel, footer span';
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  const calme = matchMedia('(prefers-reduced-motion: reduce)');
+  const mobile = matchMedia('(max-width: 640px)');
+
+  let cols = 0, rows = 0, libre, dist, energie, glyphes = {};
+  const p = { x: 0, y: 0, vx: .5, vy: .2, cap: 0 };
+
+  function atlas() {
+    glyphes = {};
+    for (const c of RAMPE) {
+      const g = document.createElement('canvas');
+      g.width = Math.ceil(CW * dpr); g.height = Math.ceil(CH * dpr);
+      const x = g.getContext('2d');
+      x.scale(dpr, dpr); x.font = `400 12px 'DM Mono', ui-monospace, monospace`;
+      x.textBaseline = 'middle'; x.fillStyle = COULEUR; x.fillText(c, 0, CH / 2);
+      glyphes[c] = g;
+    }
+  }
 
   function mesurer() {
-    cols = Math.ceil(innerWidth / CHAR_L) + 1;
-    rows = Math.ceil(innerHeight / CHAR_H) + 1;
+    cv.width = Math.round(innerWidth * dpr); cv.height = Math.round(innerHeight * dpr);
+    cols = Math.ceil(innerWidth / CW); rows = Math.ceil(innerHeight / CH);
+    libre = new Uint8Array(cols * rows); dist = new Float32Array(cols * rows); energie = new Float32Array(cols * rows);
+    p.x = cols * .8; p.y = rows * .2;
   }
 
-  function signal(x, y, t) {
-    return Math.sin(x * 0.09 + y * 0.05 - t * 0.6)
-         + Math.sin(x * 0.023 - y * 0.11 + t * 0.35) * 1.2
-         + Math.cos((x + y) * 0.04 + Math.sin(t * 0.2) * 1.5) * 0.8;
-  }
-
-  function dessiner(t) {
-    let out = '';
-    for (let y = 0; y < rows; y++) {
-      for (let x = 0; x < cols; x++) {
-        const n = (signal(x, y, t) + 3) / 6; /* normalisé dans [0, 1] */
-        out += RAMPE[Math.max(0, Math.min(RAMPE.length - 1, Math.floor(n * n * RAMPE.length)))];
-      }
-      out += '\n';
+  /* Masque des zones de texte visibles, puis distance de chaque cellule libre au texte (chanfrein 2 passes). */
+  function zones() {
+    libre.fill(1);
+    for (const el of document.querySelectorAll(TEXTE)) {
+      const r = el.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight || !r.width) continue;
+      const x0 = Math.max(0, Math.floor(r.left / CW) - MARGE), x1 = Math.min(cols - 1, Math.ceil(r.right / CW) + MARGE);
+      const y0 = Math.max(0, Math.floor(r.top / CH) - MARGE), y1 = Math.min(rows - 1, Math.ceil(r.bottom / CH));
+      for (let y = y0; y <= y1; y++) libre.fill(0, y * cols + x0, y * cols + x1 + 1);
     }
-    el.textContent = out;
+    const INF = 1e6;
+    for (let i = 0; i < dist.length; i++) dist[i] = libre[i] ? INF : 0;
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+      const i = y * cols + x; let d = dist[i];
+      if (x) d = Math.min(d, dist[i - 1] + 1);
+      if (y) d = Math.min(d, dist[i - cols] + 2);   /* une ligne vaut deux colonnes à l'écran */
+      dist[i] = d;
+    }
+    for (let y = rows - 1; y >= 0; y--) for (let x = cols - 1; x >= 0; x--) {
+      const i = y * cols + x; let d = dist[i];
+      if (x < cols - 1) d = Math.min(d, dist[i + 1] + 1);
+      if (y < rows - 1) d = Math.min(d, dist[i + cols] + 2);
+      dist[i] = d;
+    }
   }
 
-  mesurer(); dessiner(0);
-  addEventListener('resize', () => { mesurer(); dessiner(performance.now() / 1000); });
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const D = (x, y) => dist[Math.min(rows - 1, Math.max(0, Math.round(y))) * cols + Math.min(cols - 1, Math.max(0, Math.round(x)))];
 
-  /* Sur mobile, le fond reste figé pour ménager la batterie. */
-  const mobile = matchMedia('(max-width: 640px)');
-  let dernier = 0;
-  requestAnimationFrame(function boucle(ms) {
-    if (!mobile.matches && ms - dernier >= INTERVALLE) { dernier = ms; dessiner(ms / 1000); }
-    requestAnimationFrame(boucle);
-  });
+  /* Le sillage erre lentement ; près du texte, il est poussé le long du gradient de distance. */
+  function avancer(t) {
+    p.cap += Math.sin(t * .37) * .05 + Math.sin(t * .11 + 2) * .03;
+    let ax = Math.cos(p.cap) * .06, ay = Math.sin(p.cap) * .03;
+    const d = D(p.x, p.y);
+    if (d < 10) {
+      const gx = D(p.x + 1, p.y) - D(p.x - 1, p.y), gy = D(p.x, p.y + 1) - D(p.x, p.y - 1);
+      const n = Math.hypot(gx, gy) || 1, f = (10 - d) / 10 * .25;
+      ax += gx / n * f; ay += gy / n * f * .5;
+      if (d === 0) { p.x += gx / n * 2; p.y += gy / n; }  /* repoussé hors d'un bloc qui défile vers lui */
+    }
+    p.vx = (p.vx + ax) * .9; p.vy = (p.vy + ay) * .9;
+    const v = Math.hypot(p.vx, p.vy), max = .7;
+    if (v > max) { p.vx *= max / v; p.vy *= max / v; }
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 2 || p.x > cols - 3) { p.vx *= -1; p.cap = Math.PI - p.cap; p.x = Math.min(cols - 3, Math.max(2, p.x)); }
+    if (p.y < 2 || p.y > rows - 3) { p.vy *= -1; p.cap = -p.cap; p.y = Math.min(rows - 3, Math.max(2, p.y)); }
+
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+      const i = y * cols + x, d2 = (x - p.x) ** 2 + ((y - p.y) * 2) ** 2;
+      energie[i] = energie[i] * .93 + (libre[i] ? Math.exp(-d2 / 30) * .12 : 0);
+    }
+  }
+
+  function dessiner() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+      const i = y * cols + x;
+      if (!libre[i]) continue;
+      const e = energie[i];
+      const c = e > .08 ? RAMPE[Math.min(RAMPE.length - 1, Math.floor(e * RAMPE.length))] : (x % 3 === 0 && y % 2 === 0 ? '·' : '');
+      if (c) ctx.drawImage(glyphes[c], Math.round(x * CW * dpr), Math.round(y * CH * dpr));
+    }
+  }
+
+  let aJour = false;  /* les zones de texte sont recalculées au plus une fois par image */
+  const invalider = () => { aJour = false; };
+  function image(t) {
+    if (!aJour) { zones(); aJour = true; }
+    if (!calme.matches && !mobile.matches) avancer(t);
+    dessiner();
+  }
+
+  function demarrer() {
+    atlas(); mesurer(); image(0);
+    addEventListener('resize', () => { mesurer(); invalider(); image(performance.now() / 1000); });
+    addEventListener('scroll', () => { invalider(); if (calme.matches || mobile.matches) requestAnimationFrame(() => image(0)); }, { passive: true });
+    document.querySelectorAll('details').forEach(d => d.addEventListener('toggle', invalider));
+    let dernier = 0;
+    requestAnimationFrame(function boucle(ms) {
+      if (!document.hidden && !calme.matches && !mobile.matches && ms - dernier >= INTERVALLE) { dernier = ms; image(ms / 1000); }
+      requestAnimationFrame(boucle);
+    });
+  }
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(demarrer);
 })();
-

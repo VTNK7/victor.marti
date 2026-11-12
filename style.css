@@ -48,35 +48,9 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; 
 ::selection { background: var(--rose); color: var(--texte); }
 :focus-visible { outline: 2px solid #CCCCCC; outline-offset: 2px; }
 
-/* ===== Fond ASCII ===== */
-#ascii {
-  position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
-  font: 400 12px/14px var(--mono); color: rgba(66, 0, 255, .07); white-space: pre;
-}
-
-/* ===== Halo : derrière chaque bloc, un fond qui se fond dans l'ASCII =====
-   Pseudo-élément placé sous le contenu (z-index -1), pour ne jamais recouvrir un bloc voisin.
-   Il respire (seul transform est animé, donc le GPU travaille) ; chaque bloc a son rythme
-   via --respire-duree / --respire-delai pour que les bords ne bougent pas ensemble. */
-.halo { position: relative; }
-.halo::before {
-  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: var(--fond); box-shadow: 0 0 48px 32px var(--fond);
-  animation: respire var(--respire-duree, 11s) ease-in-out var(--respire-delai, 0s) infinite;
-  will-change: transform;
-}
-@keyframes respire {
-  0%, 100% { transform: translate(0, 0) scale(1, 1); }
-  33%      { transform: translate(10px, -6px) scale(1.03, 1.08); }
-  66%      { transform: translate(-8px, 5px) scale(1.02, 1.04); }
-}
-.coin                        { --respire-duree: 13s; --respire-delai: -4s; }
-#missions .entete            { --respire-duree: 9s;  --respire-delai: -2s; }
-.span:nth-child(2)           { --respire-delai: -3s; }
-.span:nth-child(3)           { --respire-duree: 12s; --respire-delai: -7s; }
-.bloc-ia                     { --respire-duree: 14s; --respire-delai: -6s; }
-#contact .entete, .contact   { --respire-delai: -5s; }
-@media (prefers-reduced-motion: reduce) { .halo::before { animation: none; } }
+/* ===== Fond : trame de points et sillage (cf. main.js) =====
+   Le texte n'a ni fond ni flou : c'est le fond qui s'écarte des blocs de texte. */
+#fond { position: fixed; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; }
 
 /* ===== Sommaire numéroté, fixe en haut à droite ===== */
 .sommaire {
@@ -132,7 +106,7 @@ section .titre::before {
   display: inline-flex; align-items: center; gap: 6px; height: 30px; min-width: 40px; padding: 0 12px;
   border: 0; cursor: pointer; text-decoration: none;
   font: 400 var(--t-petit)/1 var(--mono); letter-spacing: var(--mono-ls);
-  background: var(--couche); color: var(--texte); backdrop-filter: blur(12px);
+  background: var(--couche); color: var(--texte);
   transition: background .15s, color .15s;
 }
 .bouton:hover     { background: var(--couche-survol); }
@@ -295,8 +269,8 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
 /* Contenu provisoire : en gris tant qu'il n'est pas remplacé */
 .a-completer { color: var(--texte-discret); }
 
-@media (min-width: 1024px) { #offre { grid-column: 1 / -1; } }
+@media (min-width: 1024px) { #offre { grid-column: 1 / span 9; } }  /* laisse libres les 3 colonnes du sommaire */
 @media (max-width: 1023px) { .offres { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px)  { .offres { grid-template-columns: 1fr; gap: var(--e6); } }
 
-@media print { #ascii, .sommaire, .visuel { display: none; } }
+@media print { #fond, .sommaire, .visuel { display: none; } }
