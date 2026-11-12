@@ -8,7 +8,8 @@
   --texte-discret: #625D78;           /* gris lavande : légendes, libellés */
   --accent: #4200FF;                  /* bleu : action principale */
   /* V2 : rose / lavande pâles, complémentaires du bleu */
-  --lavande: #E6DEFA;                 /* lavande pâle : fonds de pastilles, verre */
+  --lavande: #E6DEFA;                 /* lavande pâle : fonds des visuels */
+  --lavande-clair: #F1ECFD;           /* couleur secondaire : panneaux des expériences */
   --rose: #F9DDE8;                    /* rose poudré : reflets, survols */
   --trait: rgba(0, 0, 0, .08);        /* séparateurs, graduations */
   --serif: Newsreader, Georgia, 'Times New Roman', serif;
@@ -147,6 +148,9 @@ section .titre::before {
    L'œil descend la colonne des dates, puis lit titre → avant/après → chiffres. */
 .waterfall  { display: flex; flex-direction: column; gap: var(--e8); }
 .span       { display: grid; grid-template-columns: var(--meta, 200px) minmax(0, 1fr); column-gap: var(--e4); }
+/* Chaque expérience sur un panneau lavande clair, angles droits, sans ombre ni bordure */
+.span       { padding: var(--e4); background: var(--lavande-clair); }
+.span .tags span { background: var(--fond); }  /* les pastilles restent visibles sur le lavande */
 .span-meta  { display: flex; flex-direction: column; gap: var(--e1); padding-top: 4px; }
 .date       { font: 400 var(--t-corps)/1.25 var(--mono); letter-spacing: var(--mono-ls); }
 .client     { font: 400 var(--t-petit)/1.35 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
@@ -220,7 +224,7 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
 
   /* Missions : une ligne de repères, le titre et une phrase ; un tap déplie le détail */
   .waterfall { gap: var(--e5); }
-  .span { grid-template-columns: 1fr; row-gap: 4px; }
+  .span { grid-template-columns: 1fr; row-gap: 4px; padding: var(--e3); }
   .span-meta { flex-flow: row wrap; align-items: baseline; column-gap: var(--e2); padding-top: 0; }
   .date { font-size: var(--t-petit); }
   .detail summary { position: relative; padding-right: 36px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
