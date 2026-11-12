@@ -109,11 +109,18 @@ section .titre::before {
   border: 0; cursor: pointer; text-decoration: none;
   font: 400 var(--t-petit)/1 var(--mono); letter-spacing: var(--mono-ls);
   background: var(--couche); color: var(--texte);
-  transition: background .15s, color .15s;
+  transition: background .15s, color .15s, transform .12s, filter .12s;
+  /* Toucher : pas de surbrillance du système ni de sélection du libellé ; l'aperçu de lien (appui long) reste disponible */
+  -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none;
 }
-.bouton:hover     { background: var(--couche-survol); }
 .bouton.principal { background: var(--accent); color: var(--fond); }
-.bouton.principal:hover { background: var(--texte); }
+/* Survol seulement avec une souris : sur écran tactile, le :hover reste collé après le toucher */
+@media (hover: hover) {
+  .bouton:hover           { background: var(--couche-survol); }
+  .bouton.principal:hover { background: var(--texte); }
+}
+/* Un léger enfoncement pendant l'appui, à la souris comme au doigt */
+.bouton:active { transform: scale(.97); filter: brightness(.96); }
 .bouton.icone     { justify-content: center; width: 40px; padding: 0; }
 .bouton svg       { width: 14px; height: 14px; }
 
