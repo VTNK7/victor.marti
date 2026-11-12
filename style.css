@@ -283,17 +283,22 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
 .offre .span-nom { margin-top: var(--e1); }
 /* Le détail de l'offre garde la mise en colonne de la carte (détails alignés en bas sur grand écran) */
 .offre .detail { flex: 1; display: flex; flex-direction: column; }
+@media (min-width: 641px) {
+  /* Le contenu d'un <details> vit dans ::details-content : il doit aussi s'étirer pour que les filets s'alignent */
+  .offre .detail::details-content { flex: 1; display: flex; flex-direction: column; }
+}
 .offre .detail > summary ~ * { margin-top: var(--e2); }
-.offre .detail > .offre-details { margin-top: auto; padding-top: var(--e3); }
+.offre .detail > p.discret + p { margin-top: 6px; }  /* problème puis solution : deux lignes d'une même idée */
+.offre .detail > p:not(.discret) { margin-bottom: var(--e3); }  /* de l'air avant le filet */
+.offre .detail > .etapes { margin-top: auto; padding-top: var(--e3); }
 .visuel { position: relative; background: var(--lavande); }
 .visuel img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; }
 .etiquette {
   position: absolute; top: 10px; left: 10px; padding: 4px 6px; background: var(--fond);
   font: 400 var(--t-petit)/1 var(--mono); letter-spacing: var(--mono-ls);
 }
-.offre-details { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 6px var(--e2); margin-top: auto; padding-top: var(--e1); }
-.offre-details dt { font: 400 var(--t-petit)/1.5 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
-.offre-details dd { margin: 0; }
+/* Déroulé de l'offre : des phrases courtes, une par ligne, sous un filet discret */
+.etapes { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--trait); }
 /* Contenu provisoire : en gris tant qu'il n'est pas remplacé */
 .a-completer { color: var(--texte-discret); }
 
@@ -305,10 +310,7 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
   .visuel img { aspect-ratio: 3 / 1; object-fit: cover; }
   .offre { gap: var(--e2); }
   .offre .span-nom { margin-top: 0; }
-  .offre .detail > .offre-details { margin-top: var(--e3); padding-top: 0; }
-  /* Détails : libellé au-dessus, valeur sur toute la largeur */
-  .offre-details { grid-template-columns: 1fr; row-gap: 2px; }
-  .offre-details dd + dt { margin-top: 12px; }
+  .offre .detail > .etapes { margin-top: 0; padding-top: var(--e3); gap: 14px; }
 }
 
 @media print { #fond, .sommaire, .visuel, .logo { display: none; } }

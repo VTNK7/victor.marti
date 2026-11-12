@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=DM+Mono:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=20261112d">
+<link rel="stylesheet" href="style.css?v=20261112f">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -51,13 +51,14 @@
         </figure>
         <details class="detail">
         <summary><h3 class="span-nom">Chaîne de collecte OpenTelemetry</h3><p class="resume">Une seule chaîne de collecte OpenTelemetry, sur <strong>VM et Kubernetes</strong>.</p></summary>
-        <p><span class="discret">Agents hétérogènes, configurations à la main, données perdues en route.</span> Je déploie une chaîne de collecte OpenTelemetry unique, sur VM et Kubernetes&nbsp;: logs, métriques et traces arrivent proprement dans l’outil de votre choix.</p>
-        <dl class="offre-details">
-          <dt>Démarrage</dt><dd>Diagnostic de la collecte existante, 2&nbsp;semaines</dd>
-          <dt>Ensuite</dt><dd><span class="long">Déploiement des collectors, puis onboarding des équipes une à une</span><span class="court">Déploiement, puis onboarding équipe par équipe</span></dd>
-          <dt>Livrable</dt><dd><span class="long">Agents et collectors OpenTelemetry en Helm, configurations versionnées, procédure d’onboarding</span><span class="court">Collectors OpenTelemetry en Helm, configs versionnées</span></dd>
-          <dt>Preuve</dt><dd>Des centaines d’agents déployés chez Thales</dd>
-        </dl>
+        <p class="discret">Agents hétérogènes, configurations à la main, données perdues en route.</p>
+        <p>Je les remplace par une seule chaîne OpenTelemetry. Logs, métriques et traces arrivent proprement dans l’outil de votre choix.</p>
+        <div class="etapes">
+          <p>On commence par un diagnostic de votre collecte existante, en 2&nbsp;semaines.</p>
+          <p>Je déploie ensuite les collectors, puis j’embarque vos équipes une à une.</p>
+          <p>Vous gardez des collectors en Helm et des configurations versionnées.</p>
+          <p>Des centaines d’agents tournent déjà ainsi chez Thales.</p>
+        </div>
         </details>
       </article>
       <article class="offre">
@@ -67,13 +68,14 @@
         </figure>
         <details class="detail">
         <summary><h3 class="span-nom">Observabilité de bout en bout</h3><p class="resume">Chaque requête suivie <strong>du front à la base</strong>, dashboards et alertes inclus.</p></summary>
-        <p><span class="discret">Quand une requête ralentit, personne ne sait où.</span> Je relie logs, métriques et traces, du front à la base de données, et chaque équipe reçoit automatiquement ses dashboards, alertes et détection d’anomalies.</p>
-        <dl class="offre-details">
-          <dt>Démarrage</dt><dd>Un service pilote tracé de bout en bout, 3 à 4&nbsp;semaines</dd>
-          <dt>Ensuite</dt><dd>Extension à toutes les équipes, en libre-service</dd>
-          <dt>Livrable</dt><dd><span class="long">Traces distribuées, dashboards et alertes par service, détection d’anomalies par machine learning</span><span class="court">Traces, dashboards et alertes par service, détection d’anomalies</span></dd>
-          <dt>Preuve</dt><dd>40 équipes branchées chez Thales, 2 de plus chaque semaine</dd>
-        </dl>
+        <p class="discret">Quand une requête ralentit, personne ne sait où.</p>
+        <p>Je relie logs, métriques et traces, du front à la base de données. La lenteur se localise en quelques clics.</p>
+        <div class="etapes">
+          <p>On démarre par un service pilote, tracé de bout en bout en 3 à 4&nbsp;semaines.</p>
+          <p>Puis toutes vos équipes s’y branchent, en libre-service.</p>
+          <p>Chacune reçoit ses traces, dashboards, alertes et sa détection d’anomalies.</p>
+          <p>40 équipes fonctionnent déjà ainsi chez Thales, et 2 de plus chaque semaine.</p>
+        </div>
         </details>
       </article>
       <article class="offre">
@@ -83,13 +85,14 @@
         </figure>
         <details class="detail">
         <summary><h3 class="span-nom">Observabilité des agents IA</h3><p class="resume">Chaque appel d’agent tracé&nbsp;: <strong>qualité, latence et coût</strong> mesurés.</p></summary>
-        <p><span class="discret">Vos agents LLM répondent, mais vous ne savez ni combien ils coûtent, ni pourquoi ils se trompent.</span> Je trace chaque appel de modèle, d’outil et de recherche RAG avec OpenTelemetry, et je mesure qualité, latence et coût.</p>
-        <dl class="offre-details">
-          <dt>Démarrage</dt><dd>Un agent instrumenté et évalué, 2&nbsp;semaines</dd>
-          <dt>Ensuite</dt><dd><span class="long">Généralisation à vos agents, suivi des coûts et de la qualité</span><span class="court">Généralisation à tous vos agents</span></dd>
-          <dt>Livrable</dt><dd><span class="long">Traces des agents (conventions GenAI d’OpenTelemetry), suivi des tokens et des coûts, évaluations automatiques</span><span class="court">Traces des agents, suivi des coûts, évaluations automatiques</span></dd>
-          <dt>Preuve</dt><dd>Deux fois lauréat du hackathon innovation CGI en IA générative</dd>
-        </dl>
+        <p class="discret">Vos agents LLM répondent. Mais combien coûtent-ils, et pourquoi se trompent-ils&nbsp;?</p>
+        <p>Je trace chaque appel de modèle, d’outil et de recherche RAG. Qualité, latence et coût deviennent mesurables.</p>
+        <div class="etapes">
+          <p>On commence par instrumenter et évaluer un agent, en 2&nbsp;semaines.</p>
+          <p>Puis on l’étend à tous vos agents, coûts et qualité suivis en continu.</p>
+          <p>Chaque appel est tracé selon les conventions GenAI d’OpenTelemetry.</p>
+          <p>J’ai remporté deux fois le hackathon innovation CGI en IA générative.</p>
+        </div>
         </details>
       </article>
     </div>
@@ -273,6 +276,6 @@ Ingénieur ENSEEIHT (N7), Toulouse, 2025 · Erasmus, Universidad Politécnica de
 Français natif · anglais courant
 </script>
 
-<script src="main.js?v=20261112d"></script>
+<script src="main.js?v=20261112f"></script>
 </body>
 </html>
