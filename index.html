@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=DM+Mono:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=20261112f">
+<link rel="stylesheet" href="style.css?v=20261112g">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -50,14 +50,14 @@
           <span class="etiquette">01</span>
         </figure>
         <details class="detail">
-        <summary><h3 class="span-nom">Chaîne de collecte OpenTelemetry</h3><p class="resume">Une seule chaîne de collecte OpenTelemetry, sur <strong>VM et Kubernetes</strong>.</p></summary>
-        <p class="discret">Agents hétérogènes, configurations à la main, données perdues en route.</p>
-        <p>Je les remplace par une seule chaîne OpenTelemetry. Logs, métriques et traces arrivent proprement dans l’outil de votre choix.</p>
+        <summary><h3 class="span-nom">Chaîne de collecte OpenTelemetry</h3><p class="resume">Une seule chaîne de collecte. <strong>Plus aucune donnée perdue.</strong></p></summary>
+        <p class="discret">Un agent par outil. Des configurations à la main. Des données qui se perdent en route.</p>
+        <p>Je remets de l’ordre. Une seule chaîne OpenTelemetry, sur VM comme sur Kubernetes. Vos données arrivent entières, dans l’outil que vous avez choisi.</p>
         <div class="etapes">
-          <p>On commence par un diagnostic de votre collecte existante, en 2&nbsp;semaines.</p>
-          <p>Je déploie ensuite les collectors, puis j’embarque vos équipes une à une.</p>
-          <p>Vous gardez des collectors en Helm et des configurations versionnées.</p>
-          <p>Des centaines d’agents tournent déjà ainsi chez Thales.</p>
+          <p>Tout commence par deux semaines de diagnostic.</p>
+          <p>Puis je déploie les collectors, et vos équipes montent à bord une à une.</p>
+          <p>Tout est versionné. Rien ne dépend de moi.</p>
+          <p>Chez Thales, des centaines d’agents tournent déjà ainsi.</p>
         </div>
         </details>
       </article>
@@ -67,14 +67,14 @@
           <span class="etiquette">02</span>
         </figure>
         <details class="detail">
-        <summary><h3 class="span-nom">Observabilité de bout en bout</h3><p class="resume">Chaque requête suivie <strong>du front à la base</strong>, dashboards et alertes inclus.</p></summary>
-        <p class="discret">Quand une requête ralentit, personne ne sait où.</p>
-        <p>Je relie logs, métriques et traces, du front à la base de données. La lenteur se localise en quelques clics.</p>
+        <summary><h3 class="span-nom">Observabilité de bout en bout</h3><p class="resume">Une requête ralentit&nbsp;? <strong>Vous savez où.</strong></p></summary>
+        <p class="discret">Une requête ralentit. Chacun regarde son bout du problème. Personne ne voit l’ensemble.</p>
+        <p>Je relie logs, métriques et traces, du navigateur jusqu’à la base. Le coupable apparaît en quelques clics.</p>
         <div class="etapes">
-          <p>On démarre par un service pilote, tracé de bout en bout en 3 à 4&nbsp;semaines.</p>
-          <p>Puis toutes vos équipes s’y branchent, en libre-service.</p>
-          <p>Chacune reçoit ses traces, dashboards, alertes et sa détection d’anomalies.</p>
-          <p>40 équipes fonctionnent déjà ainsi chez Thales, et 2 de plus chaque semaine.</p>
+          <p>On commence petit&nbsp;: un service pilote, tracé de bout en bout en trois ou quatre semaines.</p>
+          <p>Ensuite, chaque équipe se branche seule.</p>
+          <p>Elle reçoit ses dashboards, ses alertes et sa détection d’anomalies. Sans rien construire.</p>
+          <p>Chez Thales, 40 équipes l’ont déjà fait. Deux de plus chaque semaine.</p>
         </div>
         </details>
       </article>
@@ -84,14 +84,14 @@
           <span class="etiquette">03</span>
         </figure>
         <details class="detail">
-        <summary><h3 class="span-nom">Observabilité des agents IA</h3><p class="resume">Chaque appel d’agent tracé&nbsp;: <strong>qualité, latence et coût</strong> mesurés.</p></summary>
-        <p class="discret">Vos agents LLM répondent. Mais combien coûtent-ils, et pourquoi se trompent-ils&nbsp;?</p>
-        <p>Je trace chaque appel de modèle, d’outil et de recherche RAG. Qualité, latence et coût deviennent mesurables.</p>
+        <summary><h3 class="span-nom">Observabilité des agents IA</h3><p class="resume">Vos agents IA, enfin lisibles&nbsp;: <strong>qualité, latence, coût.</strong></p></summary>
+        <p class="discret">Vos agents répondent. Mais combien coûtent-ils&nbsp;? Et pourquoi se trompent-ils&nbsp;?</p>
+        <p>Je trace chaque appel&nbsp;: modèle, outil, recherche RAG. L’agent cesse d’être une boîte noire.</p>
         <div class="etapes">
-          <p>On commence par instrumenter et évaluer un agent, en 2&nbsp;semaines.</p>
-          <p>Puis on l’étend à tous vos agents, coûts et qualité suivis en continu.</p>
-          <p>Chaque appel est tracé selon les conventions GenAI d’OpenTelemetry.</p>
-          <p>J’ai remporté deux fois le hackathon innovation CGI en IA générative.</p>
+          <p>On commence par un seul agent, instrumenté et évalué en deux semaines.</p>
+          <p>Puis on étend à tous les autres.</p>
+          <p>Coûts et qualité se suivent alors en continu, comme pour n’importe quel service.</p>
+          <p>L’IA générative, je la pratique&nbsp;: deux hackathons d’innovation CGI remportés.</p>
         </div>
         </details>
       </article>
@@ -111,12 +111,12 @@
         </div>
         <div class="span-corps">
           <details class="detail">
-          <summary><h3 class="span-nom">Plateforme d’observabilité</h3><p class="resume"><strong>40 équipes</strong> branchées sur une plateforme commune, en environnement sécurisé.</p></summary>
-          <dl class="avant-apres">
-            <dt>Avant</dt><dd>Chaque équipe construisait sa propre observabilité, chacune à sa façon.</dd>
-            <dt>Après</dt><dd>Une plateforme commune, en environnement sécurisé&nbsp;: une équipe s’y branche et reçoit automatiquement agents, dashboards, alertes et détection d’anomalies.</dd>
-            <dt>Mon rôle</dt><dd>La chaîne de collecte OpenTelemetry et le contenu Kibana, avec le déploiement d’Elastic et l’automatisation.</dd>
-          </dl>
+          <summary><h3 class="span-nom">Plateforme d’observabilité</h3><p class="resume">Une plateforme commune. <strong>40 équipes</strong> déjà branchées.</p></summary>
+          <div class="recit">
+            <p class="discret">Chaque équipe bâtissait sa propre observabilité. Chacune à sa manière, aucune en commun.</p>
+            <p>Aujourd’hui, une seule plateforme, en environnement sécurisé. Une équipe s’y branche et reçoit tout&nbsp;: agents, dashboards, alertes, détection d’anomalies.</p>
+            <p>J’ai construit la chaîne de collecte OpenTelemetry et le contenu Kibana. J’ai aussi déployé Elastic et automatisé l’ensemble.</p>
+          </div>
           <ul class="chiffres">
             <li><span class="valeur">40</span><span class="libelle">équipes branchées</span></li>
             <li><span class="valeur">~2<small>/sem.</small></span><span class="libelle">nouvelles équipes</span></li>
@@ -134,11 +134,11 @@
         </div>
         <div class="span-corps">
           <details class="detail">
-          <summary><h3 class="span-nom">Livraison de bases de données</h3><p class="resume">Chaque release testée puis livrée <strong>en 1&nbsp;h</strong> par la CI/CD.</p></summary>
-          <dl class="avant-apres">
-            <dt>Avant</dt><dd>Bases SQL Server et packages SSIS livrés à la main, sans historique fiable.</dd>
-            <dt>Après</dt><dd>Schémas et données versionnés&nbsp;; chaque release est testée puis déployée par la CI/CD.</dd>
-          </dl>
+          <summary><h3 class="span-nom">Livraison de bases de données</h3><p class="resume">Chaque release testée, puis livrée <strong>en 1&nbsp;h</strong>.</p></summary>
+          <div class="recit">
+            <p class="discret">Les bases SQL Server et les packages SSIS partaient en production à la main. Sans historique fiable.</p>
+            <p>Désormais, schémas et données sont versionnés. Chaque release est testée, puis livrée par la CI/CD.</p>
+          </div>
           <ul class="chiffres">
             <li><span class="valeur">1<small>h</small></span><span class="libelle">par livraison, de bout en bout</span></li>
             <li><span class="valeur">100<small>%</small></span><span class="libelle">des releases testées</span></li>
@@ -156,11 +156,11 @@
         </div>
         <div class="span-corps">
           <details class="detail">
-          <summary><h3 class="span-nom">Infrastructure as Code</h3><p class="resume">Toute l’infrastructure en Terraform, déployée <strong>en 5&nbsp;min</strong>.</p></summary>
-          <dl class="avant-apres">
-            <dt>Avant</dt><dd>VM et réseau montés à la main, sans supervision, mots de passe en clair.</dd>
-            <dt>Après</dt><dd>Une infrastructure en modules Terraform revus, validée, scannée et déployée par la CI/CD.</dd>
-          </dl>
+          <summary><h3 class="span-nom">Infrastructure as Code</h3><p class="resume">Toute l’infrastructure en code, déployée <strong>en 5&nbsp;min</strong>.</p></summary>
+          <div class="recit">
+            <p class="discret">Des VM et un réseau montés à la main. Aucune supervision. Des mots de passe en clair.</p>
+            <p>J’ai tout réécrit en modules Terraform, relus en équipe. La CI/CD valide, scanne, puis déploie.</p>
+          </div>
           <ul class="chiffres">
             <li><span class="valeur">5<small>min</small></span><span class="libelle">pour tout déployer</span></li>
             <li><span class="valeur">0</span><span class="libelle">mot de passe en clair</span></li>
@@ -276,6 +276,6 @@ Ingénieur ENSEEIHT (N7), Toulouse, 2025 · Erasmus, Universidad Politécnica de
 Français natif · anglais courant
 </script>
 
-<script src="main.js?v=20261112f"></script>
+<script src="main.js?v=20261112g"></script>
 </body>
 </html>

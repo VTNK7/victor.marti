@@ -175,10 +175,8 @@ section .titre::before {
 .detail summary::-webkit-details-marker { display: none; }
 .resume { display: none; }
 
-/* Avant / Après : libellé en semi-mono aligné à gauche, phrase en serif */
-.avant-apres { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 10px var(--e2); max-width: 60ch; }
-.avant-apres dt { padding-top: 4px; font: 400 11px/1.35 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--texte-discret); }
-.avant-apres dd { margin: 0; }
+/* Récit d'une mission : le problème en gris, puis ce qui a changé, une idée par paragraphe */
+.recit { display: flex; flex-direction: column; gap: 10px; max-width: 60ch; }
 
 /* ===== Chiffres-clés : valeur en serif, libellé en semi-mono ===== */
 .chiffres { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--e4); margin: var(--e1) 0; }
@@ -254,8 +252,7 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
   }
   .detail[open] summary::after { content: '[−]'; }
   .resume { display: block; margin-top: 6px; color: var(--texte-discret); }
-  .avant-apres { grid-template-columns: 1fr; row-gap: 2px; }
-  .avant-apres dd + dt { margin-top: 12px; }
+  .recit { gap: 14px; }
 
   /* Chiffres : un par ligne, valeur puis libellé */
   .chiffres { grid-template-columns: 1fr; gap: 6px; margin: 0; }
