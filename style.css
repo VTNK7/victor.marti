@@ -122,7 +122,7 @@ section { padding-top: var(--e9); counter-increment: section; }
 /* Numéro de section, repris du sommaire */
 section .titre::before {
   content: '[' counter(section) ']'; display: block; margin-bottom: var(--e2);
-  font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); color: var(--rose-vif);
+  font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret);
 }
 .legende      { font: 400 var(--t-petit)/1.35 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
 .discret      { color: var(--texte-discret); }
@@ -148,7 +148,7 @@ section .titre::before {
 }
 .bouton:hover     { background: var(--couche-survol); }
 .bouton.principal { background: var(--accent); color: var(--fond); }
-.bouton.principal:hover { background: #2A00A8; box-shadow: 0 6px 24px -6px rgba(231, 163, 192, .9); }
+.bouton.principal:hover { background: var(--texte); }
 .bouton.icone     { justify-content: center; width: 40px; padding: 0; }
 .bouton svg       { width: 14px; height: 14px; }
 
@@ -158,7 +158,7 @@ section .titre::before {
 .hero .actions { margin-top: var(--e1); }
 /* Disponibilité : une ligne discrète, un point en guise de voyant */
 .dispo { display: flex; align-items: center; gap: var(--e1); font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
-.dispo::before { content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--rose-vif); box-shadow: 0 0 0 3px var(--rose); margin-left: 3px; }
+.dispo::before { content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 
 /* ===== Certifications + CV : fiche technique en semi-mono, sous le hero ===== */
 .coin { display: flex; flex-direction: column; gap: var(--e2); margin-top: var(--e6); max-width: 520px; }
@@ -166,7 +166,7 @@ section .titre::before {
 .spec { list-style: none; display: flex; flex-direction: column; gap: 4px; font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); }
 .spec li { display: flex; align-items: baseline; gap: var(--e1); }
 .spec .code   { flex: none; min-width: 40px; color: var(--texte); }
-.spec .points { flex: 1 1 24px; min-width: 24px; overflow: hidden; white-space: nowrap; color: var(--lavande-vive); }
+.spec .points { flex: 1 1 24px; min-width: 24px; overflow: hidden; white-space: nowrap; color: rgba(0, 0, 0, .25); }
 .spec .points::before { content: '..................................................................................................................................'; }
 .spec .nom    { flex: 0 1 auto; text-align: right; color: var(--texte-discret); }
 
@@ -204,7 +204,7 @@ section .titre::before {
 
 /* ===== Chiffres-clés : valeur en serif, libellé en semi-mono ===== */
 .chiffres { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--e4); margin: var(--e1) 0; }
-.chiffres li { display: flex; flex-direction: column; gap: var(--e1); padding-top: var(--e2); border-top: 1px solid var(--lavande-vive); }
+.chiffres li { display: flex; flex-direction: column; gap: var(--e1); }
 .chiffres .valeur { font: 400 var(--t-titre)/1.1 var(--serif); letter-spacing: var(--serre); }
 .chiffres .valeur small { margin-left: 2px; font-size: var(--t-corps); letter-spacing: 0; color: var(--texte-discret); }
 .chiffres .libelle { max-width: 200px; font: 400 var(--t-petit)/1.35 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
@@ -292,8 +292,7 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
    Une fleur très floue, découpée par des blocs sur grille (cf. pixelbloom.js), avec une typo nette par-dessus.
    Ce sont des objets posés dans la page, pas un fond. */
 .bloom {
-  position: relative; overflow: hidden; border-radius: 10px; background: var(--lavande);
-  box-shadow: 0 1px 2px rgba(66, 0, 255, .06), 0 24px 60px -28px rgba(66, 0, 255, .45);
+  position: relative; overflow: hidden; background: var(--lavande);
 }
 .bloom canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
@@ -303,7 +302,7 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
   position: absolute; inset: 0; display: flex; flex-direction: column; padding: 7% 7% 6%;
   color: var(--texte); container-type: inline-size;
 }
-.bloom-nom { font: 400 clamp(28px, 14cqi, 60px)/1 var(--serif); letter-spacing: var(--serre); padding-bottom: 4%; border-bottom: 1px solid rgba(0, 0, 0, .1); }
+.bloom-nom { font: 400 clamp(28px, 14cqi, 60px)/1 var(--serif); letter-spacing: var(--serre); }
 .bloom-ligne {
   display: flex; justify-content: space-between; gap: var(--e2); margin-top: 5%;
   font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); text-transform: uppercase; color: var(--texte-discret);
@@ -321,11 +320,11 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
   position: absolute; top: 10px; left: 10px; padding: 4px 6px; background: rgba(252, 250, 255, .8);
   font: 400 var(--t-petit)/1 var(--mono); letter-spacing: var(--mono-ls);
 }
-.offre-details { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 6px var(--e2); margin-top: auto; padding-top: var(--e2); border-top: 1px solid var(--lavande-vive); }
+.offre-details { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 6px var(--e2); margin-top: auto; padding-top: var(--e1); }
 .offre-details dt { font: 400 var(--t-petit)/1.5 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
 .offre-details dd { margin: 0; }
-/* Contenu provisoire : bien visible tant qu'il n'est pas remplacé */
-.a-completer { text-decoration: underline dashed var(--rose-vif) 1px; text-underline-offset: 4px; }
+/* Contenu provisoire : en gris tant qu'il n'est pas remplacé */
+.a-completer { color: var(--texte-discret); }
 
 @media (min-width: 1024px) {
   .hero              { grid-row: 1; }
