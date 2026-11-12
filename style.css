@@ -229,7 +229,13 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
   .span { grid-template-columns: 1fr; row-gap: 4px; }
   .span-meta { flex-flow: row wrap; align-items: baseline; column-gap: var(--e2); padding-top: 0; }
   .date { font-size: var(--t-petit); }
-  .detail summary { position: relative; padding-right: 36px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  /* Appui long : pas de sélection du titre ni de menu contextuel ; un léger retour visuel pendant l'appui */
+  .detail summary {
+    position: relative; padding-right: 36px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
+    transition: opacity .15s;
+  }
+  .detail summary:active { opacity: .55; }
   .detail summary::after {
     content: '[+]'; position: absolute; top: 4px; right: 0;
     font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret);

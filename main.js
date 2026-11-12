@@ -75,13 +75,40 @@ document.querySelectorAll('[data-rdv]').forEach(lien => {
   });
 })();
 
-/* Missions : dépliables sur mobile, toujours ouvertes sur grand écran. */
+/* Missions : dépliables sur mobile, toujours ouvertes sur grand écran.
+   Sur mobile, l'ouverture et la fermeture sont animées (hauteur du bloc + fondu du contenu),
+   au lieu du saut instantané du <details> natif. Un nouveau tap pendant l'animation la renverse. */
 (function missions() {
   const grandEcran = matchMedia('(min-width: 641px)');
+  const calme = matchMedia('(prefers-reduced-motion: reduce)');
+  const DUREE = 280, COURBE = 'cubic-bezier(.2, .7, .2, 1)';
   const details = [...document.querySelectorAll('.detail')];
   const maj = () => { if (grandEcran.matches) details.forEach(d => { d.open = true; }); };
+
+  function basculer(d) {
+    const ouvrir = !d.dataset.ouvert ? !d.open : d.dataset.ouvert === 'non';
+    d.dataset.ouvert = ouvrir ? 'oui' : 'non';
+    if (calme.matches) { d.open = ouvrir; return; }
+    const sommaire = d.querySelector('summary');
+    const depart = d.getBoundingClientRect().height;
+    d.animation?.cancel();
+    if (ouvrir) d.open = true;
+    const arrivee = ouvrir ? d.scrollHeight : sommaire.getBoundingClientRect().height;
+    d.style.overflow = 'hidden';
+    const anim = d.animate({ height: [`${depart}px`, `${arrivee}px`] }, { duration: DUREE, easing: COURBE });
+    if (ouvrir) [...d.children].slice(1).forEach(c => c.animate(
+      { opacity: [0, 1], transform: ['translateY(-6px)', 'none'] }, { duration: DUREE, easing: COURBE }));
+    d.animation = anim;
+    anim.onfinish = () => {
+      if (!ouvrir) d.open = false;
+      d.style.overflow = ''; d.animation = null;
+      dispatchEvent(new Event('miseenpage'));  /* le fond ASCII recalcule les zones de texte */
+    };
+  }
+
   details.forEach(d => d.querySelector('summary').addEventListener('click', e => {
-    if (grandEcran.matches) e.preventDefault();
+    e.preventDefault();
+    if (!grandEcran.matches) basculer(d);
   }));
   grandEcran.addEventListener('change', maj);
   maj();
@@ -158,7 +185,7 @@ document.querySelectorAll('[data-rdv]').forEach(lien => {
     atlas(); mesurer(); image();
     addEventListener('resize', () => { mesurer(); aJour = false; image(); });
     addEventListener('scroll', () => { aJour = false; if (!anime()) requestAnimationFrame(image); }, { passive: true });
-    document.querySelectorAll('details').forEach(d => d.addEventListener('toggle', () => { aJour = false; if (!anime()) image(); }));
+    addEventListener('miseenpage', () => { aJour = false; if (!anime()) image(); });
     let dernier = 0;
     requestAnimationFrame(function boucle(ms) {
       if (anime() && !document.hidden && ms - dernier >= INTERVALLE) { dernier = ms; t = ms / 1000; image(); }
