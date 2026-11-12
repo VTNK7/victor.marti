@@ -48,8 +48,8 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; 
 ::selection { background: var(--rose); color: var(--texte); }
 :focus-visible { outline: 2px solid #CCCCCC; outline-offset: 2px; }
 
-/* ===== Fond : trame de points et sillage (cf. main.js) =====
-   Le texte n'a ni fond ni flou : c'est le fond qui s'écarte des blocs de texte. */
+/* ===== Fond ASCII (cf. main.js) =====
+   Le texte n'a ni fond ni flou : les cases sous le texte restent vides. */
 #fond { position: fixed; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; }
 
 /* ===== Sommaire numéroté, fixe en haut à droite ===== */
@@ -269,7 +269,7 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
 /* Contenu provisoire : en gris tant qu'il n'est pas remplacé */
 .a-completer { color: var(--texte-discret); }
 
-@media (min-width: 1024px) { #offre { grid-column: 1 / span 9; } }  /* laisse libres les 3 colonnes du sommaire */
+@media (min-width: 1024px) { #offre { grid-column: 1 / -1; } }
 @media (max-width: 1023px) { .offres { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px)  { .offres { grid-template-columns: 1fr; gap: var(--e6); } }
 
