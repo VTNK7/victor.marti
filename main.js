@@ -194,3 +194,53 @@ document.querySelectorAll('[data-rdv]').forEach(lien => {
   }
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(demarrer);
 })();
+
+/* ===== Logo : la fleur se transforme très lentement en d'autres plantes =====
+   Même grille 5 × 6, toujours les mêmes 15 pixels : de temps en temps, un pixel
+   quitte une case et va se poser sur une case libre de la forme suivante. */
+(() => {
+  const svg = document.querySelector('.logo-fleur');
+  if (!svg) return;
+  const PLANTES = [
+    ['#.#.#', '#####', '.###.', '..#..', '.#.#.', '.#...'],  /* tulipe penchée (logo) */
+    ['#.#.#', '#####', '.###.', '..#..', '.#.#.', '...#.'],  /* tulipe penchée de l'autre côté */
+    ['.###.', '##.##', '.###.', '..#..', '.###.', '..#..'],  /* tournesol */
+    ['..#..', '..#..', '#.#.#', '###.#', '..###', '.###.'],  /* cactus */
+    ['.....', '#...#', '##.##', '..#..', '#####', '.###.'],  /* pousse en pot */
+    ['#...#', '#.#.#', '#.#.#', '.###.', '..#..', '.###.'],  /* lavande */
+    ['##.##', '#####', '.###.', '..#..', '..#..', '.#...'],  /* feuille en cœur */
+    ['.#.#.', '.###.', '.###.', '..#..', '#.#.#', '.###.'],  /* bouton fermé */
+  ].map(l => l.flatMap((r, y) => [...r].flatMap((c, x) => c === '#' ? [[x, y]] : [])));
+  const PAUSE = [30000, 60000];   /* ms pendant lesquels une plante reste immobile */
+  const PAS = [1500, 3000];       /* ms entre deux pixels déplacés pendant une transformation */
+  const hasard = ([a, b]) => a + Math.random() * (b - a);
+  const cle = ([x, y]) => x + ',' + y;
+  const pixels = [...svg.querySelectorAll('rect')];
+  const calme = matchMedia('(prefers-reduced-motion: reduce)');
+  let actuelle = 0;
+
+  function suivante() {
+    let n;
+    do { n = Math.floor(Math.random() * PLANTES.length); } while (n === actuelle);
+    actuelle = n;
+    pas();
+  }
+
+  function pas() {
+    if (calme.matches || document.hidden) return setTimeout(pas, PAS[1]);
+    const cible = new Set(PLANTES[actuelle].map(cle));
+    const occupees = new Set(pixels.map(r => r.getAttribute('x') + ',' + r.getAttribute('y')));
+    const enTrop = pixels.filter(r => !cible.has(r.getAttribute('x') + ',' + r.getAttribute('y')));
+    const manquantes = PLANTES[actuelle].filter(c => !occupees.has(cle(c)));
+    if (!enTrop.length) return setTimeout(suivante, hasard(PAUSE));
+    /* un pixel en trop, pris au hasard, rejoint la case manquante la plus proche */
+    const r = enTrop[Math.floor(Math.random() * enTrop.length)];
+    const rx = +r.getAttribute('x'), ry = +r.getAttribute('y');
+    const [x, y] = manquantes.reduce((m, c) =>
+      Math.hypot(c[0] - rx, c[1] - ry) < Math.hypot(m[0] - rx, m[1] - ry) ? c : m);
+    r.setAttribute('x', x); r.setAttribute('y', y);
+    setTimeout(pas, hasard(PAS));
+  }
+
+  setTimeout(suivante, hasard(PAUSE));
+})();
