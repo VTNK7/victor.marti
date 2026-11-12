@@ -76,7 +76,6 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; 
 .span:nth-child(3)           { --respire-duree: 12s; --respire-delai: -7s; }
 .bloc-ia                     { --respire-duree: 14s; --respire-delai: -6s; }
 #contact .entete, .contact   { --respire-delai: -5s; }
-.sommaire ol                 { --respire-duree: 10s; --respire-delai: -1s; }
 @media (prefers-reduced-motion: reduce) { .halo::before { animation: none; } }
 
 /* ===== Sommaire numéroté, fixe en haut à droite ===== */
