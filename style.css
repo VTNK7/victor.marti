@@ -9,13 +9,8 @@
   --accent: #4200FF;                  /* bleu : action principale */
   /* V2 : rose / lavande pâles, complémentaires du bleu */
   --lavande: #E6DEFA;                 /* lavande pâle : fonds des visuels */
-  /* Surface des expériences : un seul pas au-dessus du fond, dans la teinte du bleu d'action.
-     Sur cette surface, tout reste dans la même famille : étiquettes un pas plus foncées, textes secondaires
-     en violet-gris assez sombre pour garder un contraste AA (≥ 4,5:1). */
-  --lavande-clair: #F3F0FD;           /* surface des panneaux */
-  --lavande-tag: #E4DDFB;             /* étiquettes sur la surface */
+  --lavande-tag: #E4DDFB;             /* étiquettes des missions */
   --lavande-encre: #2B1D78;           /* texte des étiquettes */
-  --lavande-discret: #554E72;         /* textes secondaires sur la surface */
   --rose: #F9DDE8;                    /* rose poudré : reflets, survols */
   --trait: rgba(0, 0, 0, .08);        /* séparateurs, graduations */
   --serif: Newsreader, Georgia, 'Times New Roman', serif;
@@ -154,9 +149,6 @@ section .titre::before {
    L'œil descend la colonne des dates, puis lit titre → avant/après → chiffres. */
 .waterfall  { display: flex; flex-direction: column; gap: var(--e8); }
 .span       { display: grid; grid-template-columns: var(--meta, 200px) minmax(0, 1fr); column-gap: var(--e4); }
-/* Chaque expérience sur un panneau lavande clair, angles droits, sans ombre ni bordure */
-.span       { padding: var(--e4); background: var(--lavande-clair); }
-.span { --texte-discret: var(--lavande-discret); }
 .span .tags { gap: 4px; }
 .span .tags span { height: 24px; padding: 0 8px; background: var(--lavande-tag); color: var(--lavande-encre); }
 .span-meta  { display: flex; flex-direction: column; gap: var(--e1); padding-top: 4px; }
@@ -234,7 +226,7 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
 
   /* Missions : une ligne de repères, le titre et une phrase ; un tap déplie le détail */
   .waterfall { gap: var(--e5); }
-  .span { grid-template-columns: 1fr; row-gap: 4px; padding: var(--e3); }
+  .span { grid-template-columns: 1fr; row-gap: 4px; }
   .span-meta { flex-flow: row wrap; align-items: baseline; column-gap: var(--e2); padding-top: 0; }
   .date { font-size: var(--t-petit); }
   .detail summary { position: relative; padding-right: 36px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
