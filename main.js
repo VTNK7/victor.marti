@@ -131,3 +131,21 @@ document.querySelectorAll('[data-rdv]').forEach(lien => {
     requestAnimationFrame(boucle);
   });
 })();
+
+
+/* V2 — Feuillage : léger parallaxe au défilement, chaque plan bouge à sa vitesse (le plus proche, le plus vite). */
+(function feuillage() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const plans = [...document.querySelectorAll('.feuillage svg')].map(el => ({
+    el, v: el.classList.contains('plan-proche') ? -0.25 : el.classList.contains('plan-milieu') ? -0.12 : -0.05,
+  }));
+  let attente = false;
+  addEventListener('scroll', () => {
+    if (attente) return;
+    attente = true;
+    requestAnimationFrame(() => {
+      plans.forEach(({ el, v }) => el.style.setProperty('--dy', `${scrollY * v}px`));
+      attente = false;
+    });
+  }, { passive: true });
+})();

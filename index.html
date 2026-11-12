@@ -13,6 +13,32 @@
 <body>
 
 <pre id="ascii" aria-hidden="true"></pre>
+<div class="feuillage" aria-hidden="true">
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <linearGradient id="g-lavande" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#9F8BEA"/><stop offset="1" stop-color="#D9CEFA"/></linearGradient>
+      <linearGradient id="g-rose" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#E7A3C0"/><stop offset="1" stop-color="#F9DDE8"/></linearGradient>
+      <linearGradient id="g-bleu" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#4200FF" stop-opacity=".55"/><stop offset="1" stop-color="#B9A7F2" stop-opacity=".6"/></linearGradient>
+      <!-- Un rameau : une tige courbe et des feuilles alternées qui rapetissent vers la pointe -->
+      <g id="rameau">
+        <path d="M200 600 C 205 450, 190 300, 205 40" fill="none" stroke="currentColor" stroke-width="5"/>
+        <path d="M200 520 C 120 500, 60 440, 40 380 C 110 380, 170 430, 200 520Z"/>
+        <path d="M201 470 C 280 450, 340 390, 362 330 C 290 330, 230 380, 201 470Z"/>
+        <path d="M198 400 C 125 385, 75 330, 60 275 C 125 275, 178 320, 198 400Z"/>
+        <path d="M200 340 C 270 322, 318 270, 335 220 C 272 222, 222 265, 200 340Z"/>
+        <path d="M199 275 C 140 262, 98 218, 86 172 C 140 172, 184 210, 199 275Z"/>
+        <path d="M201 215 C 255 200, 292 160, 304 120 C 255 122, 216 158, 201 215Z"/>
+        <path d="M201 155 C 160 146, 132 115, 124 82 C 162 84, 192 112, 201 155Z"/>
+        <path d="M205 100 C 238 90, 258 66, 262 40 C 232 42, 210 64, 205 100Z"/>
+        <path d="M205 60 C 195 40, 198 18, 206 0 C 216 18, 216 40, 205 60Z"/>
+      </g>
+    </defs>
+  </svg>
+  <svg class="plan-proche f4" viewBox="0 0 400 600" aria-hidden="true"><use href="#rameau" fill="url(#g-lavande)"/></svg>
+  <svg class="plan-loin f1" viewBox="0 0 400 600" aria-hidden="true"><use href="#rameau" fill="url(#g-rose)"/></svg>
+  <svg class="plan-milieu f2" viewBox="0 0 400 600" aria-hidden="true"><use href="#rameau" fill="url(#g-bleu)"/></svg>
+  <svg class="plan-loin f3" viewBox="0 0 400 600" aria-hidden="true"><use href="#rameau" fill="url(#g-lavande)"/></svg>
+</div>
 
 <nav class="sommaire" aria-label="Sommaire">
   <ol class="halo">
