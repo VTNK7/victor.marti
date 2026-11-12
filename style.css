@@ -99,7 +99,7 @@ main {
 }
 main > * { grid-column: 1 / -1; }
 @media (min-width: 1024px) {
-  .hero, .coin, #contact { grid-column: 1 / span 6; }
+  .hero, #contact { grid-column: 1 / span 6; }
   #missions, #ia         { grid-column: 1 / span 8; }
 }
 section { padding-top: var(--e9); counter-increment: section; }
@@ -149,8 +149,8 @@ section .titre::before {
 .dispo { display: flex; align-items: center; gap: var(--e1); font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
 .dispo::before { content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 
-/* ===== Certifications + CV : fiche technique en semi-mono, sous le hero ===== */
-.coin { display: flex; flex-direction: column; gap: var(--e2); margin-top: var(--e6); max-width: 520px; }
+/* ===== Certifications + CV : fiche technique en semi-mono, après les missions ===== */
+.coin { display: flex; flex-direction: column; gap: var(--e2); margin-top: var(--e8); max-width: 520px; }
 .coin .cv { display: flex; gap: 6px; }
 .spec { list-style: none; display: flex; flex-direction: column; gap: 4px; font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); }
 .spec li { display: flex; align-items: baseline; gap: var(--e1); }
