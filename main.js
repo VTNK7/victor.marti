@@ -244,3 +244,21 @@ document.querySelectorAll('[data-rdv]').forEach(lien => {
 
   setTimeout(suivante, hasard(PAUSE));
 })();
+
+/* Offres et réalisations : apparition une à une à l'entrée dans l'écran.
+   Un seul observateur ; chaque élément est révélé une fois puis n'est plus suivi.
+   Les éléments qui entrent ensemble sont décalés (--rang) pour un effet en cascade. */
+(function apparitions() {
+  const elements = document.querySelectorAll('.apparait');
+  if (!('IntersectionObserver' in window)) { elements.forEach(el => el.classList.add('vu')); return; }
+  const observateur = new IntersectionObserver(entrees => {
+    let rang = 0;
+    entrees.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.style.setProperty('--rang', rang++);
+      e.target.classList.add('vu');
+      observateur.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px' });
+  elements.forEach(el => observateur.observe(el));
+})();

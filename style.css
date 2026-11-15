@@ -289,7 +289,7 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
 }
 .offre .detail > summary ~ * { margin-top: var(--e2); }
 .offre .detail > p.discret + p { margin-top: 6px; }  /* problème puis solution : deux lignes d'une même idée */
-.offre .detail > p:not(.discret) { margin-bottom: var(--e3); }  /* de l'air avant le filet */
+.offre .detail > p:not(.discret) { margin-bottom: var(--e2); }
 .offre .detail > .etapes { margin-top: auto; padding-top: var(--e3); }
 .visuel { position: relative; background: var(--lavande); }
 .visuel img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; }
@@ -297,8 +297,8 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
   position: absolute; top: 10px; left: 10px; padding: 4px 6px; background: var(--fond);
   font: 400 var(--t-petit)/1 var(--mono); letter-spacing: var(--mono-ls);
 }
-/* Déroulé de l'offre : des phrases courtes, une par ligne, sous un filet discret */
-.etapes { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--trait); }
+/* Déroulé de l'offre : des phrases courtes, une par ligne */
+.etapes { display: flex; flex-direction: column; gap: 10px; }
 /* Contenu provisoire : en gris tant qu'il n'est pas remplacé */
 .a-completer { color: var(--texte-discret); }
 
@@ -313,4 +313,10 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
   .offre .detail > .etapes { margin-top: 0; padding-top: var(--e3); gap: 14px; }
 }
 
-@media print { #fond, .sommaire, .visuel, .logo { display: none; } }
+/* Apparition une à une des offres et des réalisations : fondu + léger glissé,
+   uniquement opacity/transform (composités par le GPU), déclenché une seule fois. */
+.js .apparait { opacity: 0; transform: translateY(12px); transition: opacity .7s cubic-bezier(.2, .7, .2, 1), transform .7s cubic-bezier(.2, .7, .2, 1); transition-delay: calc(var(--rang, 0) * 120ms); }
+.js .apparait.vu { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .js .apparait { opacity: 1; transform: none; transition: none; } }
+
+@media print { #fond, .sommaire, .visuel, .logo { display: none; } .js .apparait { opacity: 1; transform: none; } }

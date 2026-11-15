@@ -8,7 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=DM+Mono:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=20261112f">
+<link rel="stylesheet" href="style.css?v=20261115a">
+<script>document.documentElement.classList.add('js')</script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -22,7 +23,7 @@
 <nav class="sommaire" aria-label="Sommaire">
   <ol>
     <li><a href="#offre" data-touche="1"><span class="num" aria-hidden="true">[1]</span><span class="libelle">Offre</span></a></li>
-    <li><a href="#missions" data-touche="2"><span class="num" aria-hidden="true">[2]</span><span class="libelle">Missions</span></a></li>
+    <li><a href="#missions" data-touche="2"><span class="num" aria-hidden="true">[2]</span><span class="libelle">Réalisations</span></a></li>
     <li><a href="#ia" data-touche="3"><span class="num" aria-hidden="true">[3]</span><span class="libelle">IA</span></a></li>
     <li><a href="#contact" data-touche="4"><span class="num" aria-hidden="true">[4]</span><span class="libelle">Contact</span></a></li>
   </ol>
@@ -40,28 +41,28 @@
 
   <section id="offre">
     <header class="entete">
-      <h2 class="titre">Ce que je vous propose</h2>
-      <p class="contexte">Trois points d’entrée, selon où vous en êtes&nbsp;: poser la collecte, suivre chaque requête de bout en bout, ou rendre vos agents IA observables.</p>
+      <h2 class="titre">Mon offre</h2>
+      <p class="contexte">Trois points d’entrée, selon où vous en êtes.</p>
     </header>
     <div class="offres">
-      <article class="offre">
+      <article class="offre apparait">
         <figure class="visuel" aria-hidden="true">
           <img src="images/offre-1.webp" alt="" width="864" height="576" loading="lazy" decoding="async">
           <span class="etiquette">01</span>
         </figure>
         <details class="detail">
         <summary><h3 class="span-nom">Chaîne de collecte OpenTelemetry</h3><p class="resume">Une seule chaîne de collecte OpenTelemetry, sur <strong>VM et Kubernetes</strong>.</p></summary>
-        <p class="discret">Agents hétérogènes, configurations à la main, données perdues en route.</p>
-        <p>Je les remplace par une seule chaîne OpenTelemetry. Logs, métriques et traces arrivent proprement dans l’outil de votre choix.</p>
+        <p class="discret">Agents hétérogènes, configurations à la main, données perdues.</p>
+        <p>Je les remplace par une seule chaîne OpenTelemetry, vers l’outil de votre choix.</p>
         <div class="etapes">
-          <p>On commence par un diagnostic de votre collecte existante, en 2&nbsp;semaines.</p>
-          <p>Je déploie ensuite les collectors, puis j’embarque vos équipes une à une.</p>
-          <p>Vous gardez des collectors en Helm et des configurations versionnées.</p>
-          <p>Des centaines d’agents tournent déjà ainsi chez Thales.</p>
+          <p>Diagnostic de votre collecte en 2&nbsp;semaines.</p>
+          <p>Puis déploiement des collectors, équipe par équipe.</p>
+          <p>Collectors en Helm, configurations versionnées.</p>
+          <p>Des centaines d’agents déjà en place chez Thales.</p>
         </div>
         </details>
       </article>
-      <article class="offre">
+      <article class="offre apparait">
         <figure class="visuel" aria-hidden="true">
           <img src="images/offre-2.webp" alt="" width="864" height="576" loading="lazy" decoding="async">
           <span class="etiquette">02</span>
@@ -69,29 +70,29 @@
         <details class="detail">
         <summary><h3 class="span-nom">Observabilité de bout en bout</h3><p class="resume">Chaque requête suivie <strong>du front à la base</strong>, dashboards et alertes inclus.</p></summary>
         <p class="discret">Quand une requête ralentit, personne ne sait où.</p>
-        <p>Je relie logs, métriques et traces, du front à la base de données. La lenteur se localise en quelques clics.</p>
+        <p>Je relie logs, métriques et traces, du front à la base. La lenteur se localise en quelques clics.</p>
         <div class="etapes">
-          <p>On démarre par un service pilote, tracé de bout en bout en 3 à 4&nbsp;semaines.</p>
-          <p>Puis toutes vos équipes s’y branchent, en libre-service.</p>
-          <p>Chacune reçoit ses traces, dashboards, alertes et sa détection d’anomalies.</p>
-          <p>40 équipes fonctionnent déjà ainsi chez Thales, et 2 de plus chaque semaine.</p>
+          <p>Un service pilote tracé en 3 à 4&nbsp;semaines.</p>
+          <p>Puis vos équipes s’y branchent en libre-service.</p>
+          <p>Traces, dashboards et alertes pour chacune.</p>
+          <p>40 équipes déjà branchées chez Thales.</p>
         </div>
         </details>
       </article>
-      <article class="offre">
+      <article class="offre apparait">
         <figure class="visuel" aria-hidden="true">
           <img src="images/offre-3.webp" alt="" width="864" height="576" loading="lazy" decoding="async">
           <span class="etiquette">03</span>
         </figure>
         <details class="detail">
         <summary><h3 class="span-nom">Observabilité des agents IA</h3><p class="resume">Chaque appel d’agent tracé&nbsp;: <strong>qualité, latence et coût</strong> mesurés.</p></summary>
-        <p class="discret">Vos agents LLM répondent. Mais combien coûtent-ils, et pourquoi se trompent-ils&nbsp;?</p>
-        <p>Je trace chaque appel de modèle, d’outil et de recherche RAG. Qualité, latence et coût deviennent mesurables.</p>
+        <p class="discret">Vos agents LLM répondent. Mais à quel coût, et avec quelle qualité&nbsp;?</p>
+        <p>Je trace chaque appel de modèle, d’outil et de RAG pour tout mesurer.</p>
         <div class="etapes">
-          <p>On commence par instrumenter et évaluer un agent, en 2&nbsp;semaines.</p>
-          <p>Puis on l’étend à tous vos agents, coûts et qualité suivis en continu.</p>
-          <p>Chaque appel est tracé selon les conventions GenAI d’OpenTelemetry.</p>
-          <p>J’ai remporté deux fois le hackathon innovation CGI en IA générative.</p>
+          <p>Un premier agent instrumenté en 2&nbsp;semaines.</p>
+          <p>Puis tous vos agents, suivis en continu.</p>
+          <p>Conventions GenAI d’OpenTelemetry.</p>
+          <p>Deux fois lauréat du hackathon IA générative CGI.</p>
         </div>
         </details>
       </article>
@@ -100,11 +101,11 @@
 
   <section id="missions">
     <header class="entete">
-      <h2 class="titre">Du besoin à la production</h2>
+      <h2 class="titre">Mes réalisations</h2>
     </header>
     <div class="waterfall">
 
-      <article class="span">
+      <article class="span apparait">
         <div class="span-meta">
           <span class="date">2025 – 2026</span>
           <span class="client">Thales · département IT</span>
@@ -127,7 +128,7 @@
         </div>
       </article>
 
-      <article class="span">
+      <article class="span apparait">
         <div class="span-meta">
           <span class="date">2025</span>
           <span class="client">RMN-Grand Palais</span>
@@ -149,7 +150,7 @@
         </div>
       </article>
 
-      <article class="span">
+      <article class="span apparait">
         <div class="span-meta">
           <span class="date">2024 – 2025</span>
           <span class="client">OPCO Santé</span>
@@ -276,6 +277,6 @@ Ingénieur ENSEEIHT (N7), Toulouse, 2025 · Erasmus, Universidad Politécnica de
 Français natif · anglais courant
 </script>
 
-<script src="main.js?v=20261112f"></script>
+<script src="main.js?v=20261115a"></script>
 </body>
 </html>
