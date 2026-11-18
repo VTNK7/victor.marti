@@ -1,0 +1,54 @@
+# OpenTelemetry Collector du site : reçoit les traces des navigateurs et les envoie
+#   1. à Dash0 (le jeton DASH0_TOKEN est une variable d'environnement du site alwaysdata, jamais dans le dépôt) ;
+#   2. au serveur du tableau de bord, qui en tire les métriques en direct.
+# Lancé par serveur.js, qui lui donne ses ports (PORT_COLLECTOR, PORT_COMPTEUR) et lui relaie /v1/traces.
+
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 127.0.0.1:${env:PORT_COLLECTOR}
+        max_request_body_size: 1048576          # 1 Mio : un lot navigateur pèse quelques Ko
+        cors:
+          allowed_origins: ["${env:CORS_ORIGINE:-https://vtnk7.github.io}"]   # seul le site peut envoyer depuis un navigateur
+          max_age: 7200
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 80                               # offre gratuite : 256 Mo pour tout le compte
+    spike_limit_mib: 20
+  batch/dash0:
+    timeout: 5s
+    send_batch_size: 512
+  batch/direct:
+    timeout: 200ms                              # le tableau de bord doit bouger tout de suite
+    send_batch_size: 256
+
+exporters:
+  otlp_http/dash0:
+    endpoint: ${env:DASH0_ENDPOINT:-https://ingress.europe-west4.gcp.dash0.com}
+    headers:
+      Authorization: Bearer ${env:DASH0_TOKEN}
+  otlp_http/compteur:
+    endpoint: http://127.0.0.1:${env:PORT_COMPTEUR}
+    encoding: json
+    compression: none
+    retry_on_failure:
+      enabled: false                            # un compteur en retard ne sert à rien
+
+service:
+  telemetry:
+    logs:
+      level: warn
+    metrics:
+      level: none
+  pipelines:
+    traces/dash0:
+      receivers: [otlp]
+      processors: [memory_limiter, batch/dash0]
+      exporters: [otlp_http/dash0]
+    traces/direct:
+      receivers: [otlp]
+      processors: [memory_limiter, batch/direct]
+      exporters: [otlp_http/compteur]

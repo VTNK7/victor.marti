@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord en direct · Victor Marti</title>
+<meta name="description" content="Les métriques du site de Victor Marti en direct : visites, Web Vitals, téléchargements du CV. Collectées avec OpenTelemetry.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=DM+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="style.css?v=20261118b">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- OpenTelemetry : traces envoyées au Collector du site (voir serveur/ et otel/src/otel.js) -->
+<meta name="otel-endpoint" content="">
+<meta name="tableau-api" content="">
+<script type="module" src="otel.js?v=20261118b"></script>
+</head>
+<body class="page-tableau">
+
+<a class="logo" href="./" aria-label="Victor Marti, retour à l’accueil"><svg class="logo-fleur" viewBox="0 0 5 6" width="20" height="24" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true"><rect x="0" y="0" width="1" height="1"/><rect x="2" y="0" width="1" height="1"/><rect x="4" y="0" width="1" height="1"/><rect x="0" y="1" width="1" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="3" y="4" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/></svg></a>
+
+<main class="tableau">
+
+  <header class="hero">
+    <h1 class="display"><span>Tableau de bord</span><span class="discret">Ce site, observé en direct.</span></h1>
+    <p class="accroche">Chaque visite envoie des traces OpenTelemetry depuis le navigateur vers un Collector. Il les transmet à Dash0 et alimente cette page, sans cookie ni identifiant de visiteur.</p>
+    <p class="legende statut" data-statut="connexion" aria-live="polite"><span class="pastille" aria-hidden="true"></span><span class="statut-texte">Connexion…</span></p>
+  </header>
+
+  <section aria-labelledby="t-trafic">
+    <h2 class="titre" id="t-trafic">Trafic</h2>
+    <ul class="chiffres tuiles">
+      <li><span class="valeur" data-valeur="visites.enCeMoment">–</span><span class="libelle">pages vues sur les 5 dernières minutes</span></li>
+      <li><span class="valeur" data-valeur="visites.aujourdhui">–</span><span class="libelle">visites aujourd’hui</span></li>
+      <li><span class="valeur" data-valeur="visites.total">–</span><span class="libelle">visites au total</span></li>
+      <li><span class="valeur" data-valeur="cv.total">–</span><span class="libelle">CV téléchargés <span class="discret" data-valeur-libelle="cv.aujourdhui"></span></span></li>
+    </ul>
+
+    <figure class="graphique">
+      <figcaption class="legende">Visites par jour, 14 derniers jours</figcaption>
+      <div class="graphique-zone" data-graphique="visites"></div>
+      <details class="donnees">
+        <summary class="legende">Voir les données</summary>
+        <table><thead><tr><th>Jour</th><th>Visites</th></tr></thead><tbody data-table="visites"></tbody></table>
+      </details>
+    </figure>
+  </section>
+
+  <section aria-labelledby="t-vitals">
+    <h2 class="titre" id="t-vitals">Web Vitals</h2>
+    <p class="contexte discret">75<sup>e</sup> percentile des mesures réelles des visiteurs sur 7 jours, avec les seuils de Google.</p>
+    <ul class="vitals" data-vitals></ul>
+  </section>
+
+  <section aria-labelledby="t-compteur">
+    <h2 class="titre" id="t-compteur">Le compteur</h2>
+    <p class="contexte">Chaque clic envoie un span <code>bouton.compteur</code>. Il traverse le Collector et revient ici en moins d’une seconde.</p>
+    <div class="compteur-bloc">
+      <span class="valeur-geante" data-valeur="bouton.total">–</span>
+      <button class="bouton principal" type="button" data-compteur>Faire monter le compteur +1</button>
+    </div>
+  </section>
+
+  <footer class="legende"><a href="./">← Victor Marti</a><span data-depuis></span></footer>
+
+</main>
+
+<script src="tableau-de-bord.js?v=20261118b"></script>
+</body>
+</html>

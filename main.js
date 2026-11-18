@@ -244,3 +244,25 @@ document.querySelectorAll('[data-rdv]').forEach(lien => {
 
   setTimeout(suivante, hasard(PAUSE));
 })();
+
+/* Bloc « en direct » : affiché seulement si le serveur du tableau de bord est configuré.
+   La valeur du compteur est lue une fois quand le bloc devient visible, puis +1 à chaque clic
+   (le span part via otel.js ; le tableau de bord, lui, suit le flux en direct). */
+const direct = document.querySelector('[data-direct]');
+const apiTableau = document.querySelector('meta[name="tableau-api"]')?.content.trim().replace(/\/$/, '');
+if (direct && apiTableau && document.querySelector('meta[name="otel-endpoint"]')?.content.trim() && !navigator.webdriver) {
+  direct.hidden = false;
+  const sortie = direct.querySelector('[data-compteur-valeur]');
+  let valeur = null, synchro = null;
+  const afficherValeur = () => { sortie.textContent = valeur == null ? '' : `· ${valeur.toLocaleString('fr-FR')}`; };
+  const charger = () => fetch(`${apiTableau}/api/etat`).then(r => r.json()).then(d => { valeur = d.bouton.total; afficherValeur(); }).catch(() => {});
+  new IntersectionObserver((entrees, obs) => {
+    if (entrees.some(e => e.isIntersecting)) { obs.disconnect(); charger(); }
+  }).observe(direct);
+  /* +1 tout de suite, puis valeur du serveur une fois les clics arrivés (le span part en ~1 s). */
+  direct.querySelector('[data-compteur]').addEventListener('click', () => {
+    if (valeur != null) { valeur++; afficherValeur(); }
+    clearTimeout(synchro);
+    synchro = setTimeout(charger, 2000);
+  });
+}

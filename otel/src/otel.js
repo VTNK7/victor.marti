@@ -7,14 +7,16 @@
 
    Sans endpoint, rien ne s'initialise. Respect de la vie privée :
    - aucun cookie, aucun stockage local, aucun identifiant de visiteur ou de session persistant ;
-   - désactivé si le navigateur envoie Global Privacy Control ou Do Not Track, et pour les robots (webdriver) ;
+   - si le navigateur envoie Global Privacy Control ou Do Not Track, aucune mesure automatique :
+     seul un clic volontaire sur le bouton compteur est envoyé ; rien du tout pour les robots (webdriver) ;
    - les URL sont envoyées sans query string ni fragment.
 
    Signaux produits (traces uniquement) :
    - chargement de la page (instrumentation document-load : DNS, TTFB, ressources…) ;
    - Web Vitals (LCP, INP, CLS, FCP, TTFB), un span « web-vital » par mesure ;
    - clics sur les liens et boutons, un span « click » ;
-   - erreurs JavaScript non gérées, un span « exception ».
+   - erreurs JavaScript non gérées, un span « exception » ;
+   - clic sur un bouton [data-compteur], un span « bouton.compteur » envoyé immédiatement.
 
    Construire : cd otel && npm ci && npm run build   → génère ../otel.js */
 
@@ -35,10 +37,10 @@ const sansRequete = url => {
   catch { return ''; }
 };
 
-const refus = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1' || navigator.webdriver;
+const refus = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1';
 const endpoint = meta('otel-endpoint');
 
-if (endpoint && !refus) {
+if (endpoint && !navigator.webdriver) {
   const headers = Object.fromEntries(meta('otel-headers').split(',')
     .map(paire => { const i = paire.indexOf('='); return [paire.slice(0, i).trim(), paire.slice(i + 1).trim()]; })
     .filter(([k, v]) => k && v));
@@ -51,11 +53,28 @@ if (endpoint && !refus) {
       'browser.mobile': matchMedia('(pointer: coarse)').matches,
       'user_agent.original': navigator.userAgent,
     }),
-    spanProcessors: [new BatchSpanProcessor({ exporter: new OTLPTraceExporter({ url: endpoint, headers }) })],
+    spanProcessors: [new BatchSpanProcessor({
+      exporter: new OTLPTraceExporter({ url: endpoint, headers }),
+      scheduledDelayMillis: 1000,               /* tableau de bord en direct : envoi chaque seconde */
+    })],
   });
   trace.setGlobalTracerProvider(provider);
   context.setGlobalContextManager(new StackContextManager().enable());
 
+  const tracer = trace.getTracer(SERVICE);
+  const page = { 'url.path': location.pathname, 'document.title': document.title };
+
+  /* Bouton compteur : action volontaire, envoyée tout de suite (même avec GPC / DNT). */
+  document.addEventListener('click', e => {
+    if (!(e.target instanceof Element && e.target.closest('[data-compteur]'))) return;
+    tracer.startSpan('bouton.compteur', { attributes: page }).end();
+    provider.forceFlush();
+  });
+
+  if (!refus) mesuresAutomatiques(tracer, page, provider);
+}
+
+function mesuresAutomatiques(tracer, page, provider) {
   registerInstrumentations({
     instrumentations: [new DocumentLoadInstrumentation({
       applyCustomAttributesOnSpan: {
@@ -65,9 +84,6 @@ if (endpoint && !refus) {
       },
     })],
   });
-
-  const tracer = trace.getTracer(SERVICE);
-  const page = { 'url.path': location.pathname, 'document.title': document.title };
 
   /* Web Vitals : une mesure = un span, valeur et note en attributs. */
   const vital = m => tracer.startSpan('web-vital', { attributes: {

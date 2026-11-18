@@ -8,14 +8,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=DM+Mono:wght@400&display=swap">
-<link rel="stylesheet" href="style.css?v=20261112f">
+<link rel="stylesheet" href="style.css?v=20261118b">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <!-- OpenTelemetry vers Dash0 (voir otel/src/otel.js). Le jeton est public : il doit être limité à l’ingestion. -->
 <meta name="otel-endpoint" content="https://ingress.europe-west4.gcp.dash0.com/v1/traces">
 <meta name="otel-headers" content="Authorization=Bearer auth_blMY197AtG9S4UHVkMsZJvkwQRm50RXE">
-<script type="module" src="otel.js?v=20261118a"></script>
+<meta name="tableau-api" content="">
+<script type="module" src="otel.js?v=20261118b"></script>
 </head>
 <body>
 
@@ -226,6 +227,11 @@
     </div>
   </section>
 
+  <aside class="direct" data-direct hidden aria-label="Ce site en direct">
+    <p class="legende">Ce site est instrumenté avec OpenTelemetry. <a href="tableau-de-bord.html">Voir le tableau de bord en direct&nbsp;→</a></p>
+    <button class="bouton" type="button" data-compteur>Faire monter le compteur <span class="compteur-valeur" data-compteur-valeur></span></button>
+  </aside>
+
   <footer class="legende"><span>Victor Marti</span><span>© 2026</span></footer>
 
 </main>
@@ -280,6 +286,6 @@ Ingénieur ENSEEIHT (N7), Toulouse, 2025 · Erasmus, Universidad Politécnica de
 Français natif · anglais courant
 </script>
 
-<script src="main.js?v=20261112f"></script>
+<script src="main.js?v=20261118b"></script>
 </body>
 </html>
