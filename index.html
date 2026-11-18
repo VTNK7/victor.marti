@@ -12,6 +12,10 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- OpenTelemetry vers Dash0 (voir otel/src/otel.js). Le jeton est public : il doit être limité à l’ingestion. -->
+<meta name="otel-endpoint" content="https://ingress.europe-west4.gcp.dash0.com/v1/traces">
+<meta name="otel-headers" content="Authorization=Bearer auth_blMY197AtG9S4UHVkMsZJvkwQRm50RXE">
+<script type="module" src="otel.js?v=20261118a"></script>
 </head>
 <body>
 
