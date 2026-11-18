@@ -37,9 +37,16 @@ tableau-de-bord.html ◀──SSE──────┴──── métriques ag
 Les mises à jour poussées sur `main` sont appliquées en 5 minutes au plus : la tâche récupère le code
 et `serveur.js` redémarre de lui-même.
 
-## Tester en local
+## Développer en local (sans backend en ligne)
 
 ```
-OTELCOL_BIN=/chemin/otelcol DOSSIER_DONNEES=/tmp/donnees DASH0_TOKEN=… \
-CORS_ORIGINE=http://127.0.0.1:8765 PORT=8790 node serveur/serveur.js
+serveur/local.sh --demo
 ```
+
+- télécharge le Collector officiel pour la machine (Linux ou macOS) dans `serveur/.local/` ;
+- lance le serveur et le Collector sur http://localhost:8790, et le site sur http://localhost:8000 ;
+- `--demo` injecte 14 jours de visites fictives (via le Collector, comme un vrai navigateur).
+
+Ouvrir http://localhost:8000/tableau-de-bord.html. Les pages servies depuis `localhost` envoient
+automatiquement leurs traces au serveur local ; sans `DASH0_TOKEN`, le Collector utilise
+`otelcol-local.yaml` (pas d'export vers Dash0). Node.js ≥ 18 et Python 3 sont nécessaires.

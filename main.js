@@ -249,8 +249,10 @@ document.querySelectorAll('[data-rdv]').forEach(lien => {
    La valeur du compteur est lue une fois quand le bloc devient visible, puis +1 à chaque clic
    (le span part via otel.js ; le tableau de bord, lui, suit le flux en direct). */
 const direct = document.querySelector('[data-direct]');
-const apiTableau = document.querySelector('meta[name="tableau-api"]')?.content.trim().replace(/\/$/, '');
-if (direct && apiTableau && document.querySelector('meta[name="otel-endpoint"]')?.content.trim() && !navigator.webdriver) {
+const enLocal = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);   /* serveur de développement : serveur/local.sh */
+const apiTableau = enLocal ? `http://${location.hostname}:8790`
+  : document.querySelector('meta[name="tableau-api"]')?.content.trim().replace(/\/$/, '');
+if (direct && apiTableau && (enLocal || document.querySelector('meta[name="otel-endpoint"]')?.content.trim()) && !navigator.webdriver) {
   direct.hidden = false;
   const sortie = direct.querySelector('[data-compteur-valeur]');
   let valeur = null, synchro = null;

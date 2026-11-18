@@ -33,7 +33,7 @@ const JOURS_HISTORIQUE = 30;          /* visites par jour conservées */
 const JOURS_VITALS = 7;               /* fenêtre des percentiles Web Vitals */
 const MAX_VITALS = 5000;              /* valeurs gardées par métrique */
 const FENETRE_DIRECT = 5 * 60e3;      /* « en ce moment » = pages vues sur 5 minutes */
-const MAX_PAR_LOT = 50;               /* garde-fou : incréments retenus par requête et par compteur */
+const MAX_PAR_LOT = 50;               /* garde-fou : incréments retenus par lot de navigateur et par compteur */
 const MAX_CLIENTS = 200;              /* connexions SSE simultanées */
 
 /* Seuils officiels des Web Vitals (bon ≤ s[0] < à améliorer ≤ s[1] < mauvais). */
@@ -102,17 +102,21 @@ function valeur(v = {}) {
 const attributs = liste => Object.fromEntries((liste || []).map(a => [a.key, valeur(a.value)]));
 
 function traiter(otlp) {
-  const n = { visites: 0, cv: 0, bouton: 0 };
-  let tVisite = Date.now(), tCv = Date.now();
+  let change = false;
+  /* Le Collector regroupe plusieurs navigateurs dans un même envoi : le garde-fou anti-abus
+     s'applique donc par ressource (= un lot d'un navigateur), pas par requête. */
   for (const rs of otlp.resourceSpans || []) {
     if (attributs(rs.resource?.attributes)['service.name'] !== SERVICE) continue;
+    const n = { visites: 0, cv: 0, bouton: 0 };
+    let tVisite = Date.now(), tCv = Date.now();
     for (const ss of rs.scopeSpans || []) {
       for (const span of ss.spans || []) {
         const a = attributs(span.attributes);
         const t = Math.min(Number(BigInt(span.startTimeUnixNano || 0) / 1000000n) || Date.now(), Date.now());
         switch (span.name) {
           case 'documentLoad':
-            n.visites++; tVisite = t; pagesRecentes.push(Date.now());
+            n.visites++; tVisite = t;
+            if (Date.now() - t < FENETRE_DIRECT) pagesRecentes.push(t);
             break;
           case 'click':
             if (/\.pdf$/i.test(String(a['url.full'] || ''))) { n.cv++; tCv = t; }
@@ -122,17 +126,18 @@ function traiter(otlp) {
             break;
           case 'web-vital': {
             const nom = a['web_vital.name'], v = Number(a['web_vital.value']);
-            if (etat.vitals[nom] && Number.isFinite(v) && v >= 0) { etat.vitals[nom].push([t, v]); modifie = true; }
+            if (etat.vitals[nom] && Number.isFinite(v) && v >= 0) { etat.vitals[nom].push([t, v]); change = modifie = true; }
             break;
           }
         }
       }
     }
+    incrementer(etat.visites, Math.min(n.visites, MAX_PAR_LOT), tVisite);
+    incrementer(etat.cv, Math.min(n.cv, MAX_PAR_LOT), tCv);
+    incrementer(etat.bouton, Math.min(n.bouton, MAX_PAR_LOT));
+    change ||= n.visites + n.cv + n.bouton > 0;
   }
-  incrementer(etat.visites, Math.min(n.visites, MAX_PAR_LOT), tVisite);
-  incrementer(etat.cv, Math.min(n.cv, MAX_PAR_LOT), tCv);
-  incrementer(etat.bouton, Math.min(n.bouton, MAX_PAR_LOT));
-  if (n.visites || n.cv || n.bouton || modifie) diffuser();
+  if (change) diffuser();
 }
 
 /* ---------- Vue publique ---------- */
@@ -252,7 +257,9 @@ let collector = null, arret = false;
 async function demarrerCollector(portCompteur) {
   if (!fs.existsSync(OTELCOL)) { console.error(`Collector introuvable (${OTELCOL}) : lancer mettre-a-jour.sh`); return; }
   const port = await portLibre();
-  collector = spawn(OTELCOL, ['--config', path.join(__dirname, 'otelcol.yaml')], {
+  /* Sans jeton Dash0 (développement local), configuration réduite au seul tableau de bord. */
+  const config = process.env.DASH0_TOKEN ? 'otelcol.yaml' : 'otelcol-local.yaml';
+  collector = spawn(OTELCOL, ['--config', path.join(__dirname, config)], {
     env: { ...process.env, PORT_COLLECTOR: String(port), PORT_COMPTEUR: String(portCompteur) },
     stdio: ['ignore', 'inherit', 'inherit'],
   });

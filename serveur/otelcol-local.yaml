@@ -1,0 +1,33 @@
+# Collector en local (serveur/local.sh) : pas d'export Dash0, seulement le tableau de bord.
+# serveur.js l'utilise automatiquement quand DASH0_TOKEN n'est pas défini.
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 127.0.0.1:${env:PORT_COLLECTOR}
+        cors:
+          allowed_origins: ["http://localhost:*", "http://127.0.0.1:*"]
+
+processors:
+  batch:
+    timeout: 200ms
+
+exporters:
+  otlp_http/compteur:
+    endpoint: http://127.0.0.1:${env:PORT_COMPTEUR}
+    encoding: json
+    compression: none
+    retry_on_failure:
+      enabled: false
+
+service:
+  telemetry:
+    logs:
+      level: warn
+    metrics:
+      level: none
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp_http/compteur]

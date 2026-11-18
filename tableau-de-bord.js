@@ -1,7 +1,10 @@
-/* Tableau de bord en direct : écoute le flux SSE du compteur (serveur/compteur/serveur.js)
-   et met à jour les tuiles, le graphique des visites et les Web Vitals. */
+/* Tableau de bord en direct : écoute le flux SSE du serveur (serveur/serveur.js)
+   et met à jour les chiffres clés, les Web Vitals et le graphique des visites.
+   En local (localhost), vise automatiquement le serveur de développement sur le port 8790. */
 
-const API = document.querySelector('meta[name="tableau-api"]')?.content.trim().replace(/\/$/, '');
+const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+const API = LOCAL ? `http://${location.hostname}:8790`
+  : document.querySelector('meta[name="tableau-api"]')?.content.trim().replace(/\/$/, '');
 const statut = document.querySelector('[data-statut]');
 const fmt = new Intl.NumberFormat('fr-FR');
 
@@ -23,8 +26,6 @@ function majValeurs(d) {
       if (!premiere) { el.classList.remove('change'); void el.offsetWidth; el.classList.add('change'); }
     }
   });
-  const cvJour = d.cv.aujourdhui;
-  document.querySelector('[data-valeur-libelle="cv.aujourdhui"]').textContent = cvJour ? `(${fmt.format(cvJour)} aujourd’hui)` : '';
   document.querySelector('[data-depuis]').textContent =
     `Mesures depuis le ${new Date(d.depuis).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
 }
@@ -105,17 +106,36 @@ const formater = (v, unite) => unite === 'ms'
   ? (v >= 1000 ? `${(v / 1000).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} s` : `${Math.round(v)} ms`)
   : v.toLocaleString('fr-FR', { maximumFractionDigits: 3 });
 
+const valeurVital = (v, unite) => v.p75 == null ? '–' : formater(v.p75, unite);
+const pastilleNote = v => {
+  const note = v.note && NOTES[v.note];
+  return note ? `<span class="note note-${v.note}"><span aria-hidden="true">${note.icone}</span> ${note.texte}</span>`
+    : '<span class="note">En attente</span>';
+};
+
+/* Core Web Vitals (LCP, INP, CLS) en cartes ; FCP et TTFB en lignes compactes. */
 function majVitals(vitals) {
-  document.querySelector('[data-vitals]').innerHTML = Object.entries(VITALS).map(([cle, { nom, unite }]) => {
-    const v = vitals[cle];
-    const note = v.note && NOTES[v.note];
-    return `<li class="vital">
-      <span class="vital-nom"><strong>${cle}</strong><span class="discret">${nom}</span></span>
-      <span class="vital-valeur">${v.p75 == null ? '–' : formater(v.p75, unite)}</span>
-      ${note ? `<span class="note note-${v.note}"><span aria-hidden="true">${note.icone}</span> ${note.texte}</span>` : '<span class="note">Pas encore de mesure</span>'}
-      <span class="legende vital-detail">${fmt.format(v.mesures)} mesure${v.mesures > 1 ? 's' : ''} · bon ≤ ${formater(v.seuils[0], unite)}</span>
+  const cartes = ['LCP', 'INP', 'CLS'].map(cle => {
+    const v = vitals[cle], { nom, unite } = VITALS[cle];
+    return `<li class="vital-carte">
+      <abbr class="vital-cle" title="${nom}">${cle}</abbr>
+      <span class="vital-valeur">${valeurVital(v, unite)}</span>
+      ${pastilleNote(v)}
+      <span class="vital-detail">bon ≤ ${formater(v.seuils[0], unite)}</span>
     </li>`;
   }).join('');
+  const lignes = ['FCP', 'TTFB'].map(cle => {
+    const v = vitals[cle], { nom, unite } = VITALS[cle];
+    return `<li class="vital-ligne">
+      <span><abbr class="vital-cle" title="${nom}">${cle}</abbr> <span class="discret">${nom}</span></span>
+      <span class="vital-valeur">${valeurVital(v, unite)}</span>
+      ${pastilleNote(v)}
+    </li>`;
+  }).join('');
+  document.querySelector('[data-vitals="principaux"]').innerHTML = cartes;
+  document.querySelector('[data-vitals="secondaires"]').innerHTML = lignes;
+  const n = Math.max(...Object.values(vitals).map(v => v.mesures));
+  document.querySelector('#t-vitals + .legende').textContent = `75e percentile · 7 jours · ${fmt.format(n)} mesure${n > 1 ? 's' : ''}`;
 }
 
 let dernier = null;
@@ -140,8 +160,9 @@ if (!API) {
   afficherStatut('erreur', 'Serveur du tableau de bord non configuré');
 } else if ('EventSource' in window) {
   const flux = new EventSource(`${API}/api/direct`);
-  flux.onopen = () => afficherStatut('direct', 'En direct');
-  flux.onmessage = e => { afficherStatut('direct', 'En direct'); afficher(JSON.parse(e.data)); };
+  const heure = () => new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  flux.onopen = () => afficherStatut('direct', LOCAL ? 'En direct · serveur local' : 'En direct');
+  flux.onmessage = e => { afficherStatut('direct', `En direct · ${heure()}`); afficher(JSON.parse(e.data)); };
   flux.onerror = () => afficherStatut('connexion', 'Reconnexion…');
 } else {
   const charger = () => fetch(`${API}/api/etat`).then(r => r.json()).then(d => { afficherStatut('direct', 'Mis à jour toutes les 10 s'); afficher(d); })

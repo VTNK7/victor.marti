@@ -5,7 +5,8 @@
      <meta name="otel-headers"  content="clé=valeur,clé2=valeur2"> optionnel ; visible de tous, n'y mettre
                                                                    qu'un jeton limité à l'ingestion
 
-   Sans endpoint, rien ne s'initialise. Respect de la vie privée :
+   En local (localhost / 127.0.0.1), les traces vont au serveur de développement http://localhost:8790
+   (voir serveur/local.sh), sans en-têtes. Sans endpoint, rien ne s'initialise. Respect de la vie privée :
    - aucun cookie, aucun stockage local, aucun identifiant de visiteur ou de session persistant ;
    - si le navigateur envoie Global Privacy Control ou Do Not Track, aucune mesure automatique :
      seul un clic volontaire sur le bouton compteur est envoyé ; rien du tout pour les robots (webdriver) ;
@@ -38,17 +39,18 @@ const sansRequete = url => {
 };
 
 const refus = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1';
-const endpoint = meta('otel-endpoint');
+const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+const endpoint = LOCAL ? `http://${location.hostname}:8790/v1/traces` : meta('otel-endpoint');
 
 if (endpoint && !navigator.webdriver) {
-  const headers = Object.fromEntries(meta('otel-headers').split(',')
+  const headers = LOCAL ? {} : Object.fromEntries(meta('otel-headers').split(',')
     .map(paire => { const i = paire.indexOf('='); return [paire.slice(0, i).trim(), paire.slice(i + 1).trim()]; })
     .filter(([k, v]) => k && v));
 
   const provider = new TracerProvider({
     resource: resourceFromAttributes({
       'service.name': SERVICE,
-      'deployment.environment.name': /^(localhost|127\.|\[::1\])/.test(location.hostname) ? 'dev' : 'prod',
+      'deployment.environment.name': LOCAL ? 'dev' : 'prod',
       'browser.language': navigator.language,
       'browser.mobile': matchMedia('(pointer: coarse)').matches,
       'user_agent.original': navigator.userAgent,

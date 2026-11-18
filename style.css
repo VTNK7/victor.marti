@@ -322,29 +322,73 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
 .direct + footer { margin-top: var(--e3); padding-top: 0; }
 .compteur-valeur { color: var(--texte-discret); }
 
-/* ===== Tableau de bord ===== */
-.page-tableau section { padding-top: var(--e8); }
-.page-tableau section .titre::before { display: none; }  /* pas de sommaire sur cette page */
-.page-tableau .titre { margin-bottom: var(--e3); }
-@media (min-width: 1024px) { .page-tableau main > section { grid-column: 1 / span 8; } }
+/* ===== Tableau de bord (mobile first : styles de base pour téléphone, puis min-width) ===== */
+.page-tableau { background: var(--fond); }
+main.tb {
+  display: flex; flex-direction: column; gap: 36px; max-width: 1180px; margin: 0 auto;
+  padding: max(16px, env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom));
+}
+.tb section { padding-top: 0; }
 
-.statut { display: inline-flex; align-items: center; gap: var(--e1); }
-.statut .pastille { width: 8px; height: 8px; border-radius: 50%; background: var(--texte-discret); }
+.tb-entete { display: flex; flex-direction: column; gap: 8px; }
+.tb-retour { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; min-height: 44px; text-decoration: none; color: var(--texte-discret); }
+.tb-retour .logo-fleur { color: var(--accent); }
+.tb-entete .titre { font-size: 32px; }
+
+.statut { display: inline-flex; align-items: center; gap: 8px; }
+.statut .pastille { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--texte-discret); }
 .statut[data-statut="direct"] .pastille { background: #0ca30c; animation: pouls 2s ease-in-out infinite; }
 .statut[data-statut="erreur"] .pastille { background: #d03b3b; }
 @keyframes pouls { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .statut .pastille, .carte-direct .carte-libelle::before { animation: none !important; } }
 
-.tuiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.valeur { transition: color .6s; }
-.valeur.change { animation: change 1.2s ease-out; }
-@keyframes change { from { color: var(--accent); } to { color: var(--texte); } }
+/* Chiffres clés : cartes 2 × 2 sur téléphone */
+.tb-cles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.carte { display: flex; flex-direction: column; gap: 4px; min-height: 124px; padding: 14px; background: var(--couche); }
+.carte-libelle, .carte-detail { font: 400 var(--t-petit)/1.3 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
+.carte-valeur { margin-top: auto; font: 400 44px/1 var(--serif); letter-spacing: var(--serre); font-variant-numeric: tabular-nums; }
+.carte-direct { background: var(--accent); color: var(--fond); }
+.carte-direct .carte-libelle, .carte-direct .carte-detail { color: rgba(255, 255, 255, .78); }
+.carte-direct .carte-libelle { display: flex; align-items: center; gap: 6px; }
+.carte-direct .carte-libelle::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--fond); animation: pouls 2s ease-in-out infinite; }
+.carte-compteur { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr; align-items: end; column-gap: 8px; }
+.carte-compteur .carte-libelle { grid-column: 1 / -1; }
+.carte-compteur .bouton { height: 44px; min-width: 52px; justify-content: center; font-size: 14px; }
 
-.graphique { margin-top: var(--e5); }
-.graphique-zone { position: relative; margin-top: var(--e2); }
-.graphique svg { display: block; width: 100%; height: auto; overflow: visible; }
+.carte-valeur.change, .vital-valeur.change { animation: change 1.2s ease-out; }
+.carte-direct .carte-valeur.change { animation: none; }
+@keyframes change { from { color: var(--accent); } }
+
+/* Blocs */
+.tb-bloc { display: flex; flex-direction: column; gap: 12px; }
+.tb-bloc-tete { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+.tb-titre { font: 400 var(--t-titre-s)/1.2 var(--serif); letter-spacing: -.01em; }
+
+/* Web Vitals : les trois Core Web Vitals en cartes, FCP et TTFB en lignes */
+.vitals-cles { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.vital-carte { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 12px; box-shadow: inset 0 0 0 1px var(--trait); }
+.vital-cle { font: 400 var(--t-petit)/1.2 var(--mono); letter-spacing: var(--mono-ls); text-decoration: none; }
+.vital-carte .vital-valeur { font: 400 24px/1.05 var(--serif); letter-spacing: -.02em; white-space: nowrap; }
+.vital-detail { font: 400 11px/1.3 var(--mono); color: var(--texte-discret); }
+.vitals-autres { list-style: none; display: flex; flex-direction: column; }
+.vital-ligne {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 12px;
+  min-height: 48px; border-bottom: 1px solid var(--trait);
+}
+.vital-ligne .discret { font-size: 15px; }
+.vital-ligne .vital-valeur { font: 400 18px/1 var(--serif); }
+.note { display: inline-flex; gap: 4px; padding: 4px 6px; font: 400 11px/1.1 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); white-space: nowrap; }
+.note[class*="note-"] { color: var(--texte); }
+.note-good { background: rgba(12, 163, 12, .14); }
+.note-needs-improvement { background: rgba(250, 178, 25, .24); }
+.note-poor { background: rgba(208, 59, 59, .16); }
+
+/* Graphique des visites */
+.graphique-zone { position: relative; }
+.graphique svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
 .graphique .barre { fill: var(--accent); }
 .graphique .colonne.active .barre { fill: #2B00A8; }
-.graphique .cible { fill: transparent; cursor: default; }
+.graphique .cible { fill: transparent; }
 .graphique .grille { stroke: #e1e0d9; stroke-width: 1; stroke-dasharray: 2 3; }
 .graphique .axe { stroke: #c3c2b7; stroke-width: 1; }
 .graphique .axe-texte { font: 400 11px var(--mono); fill: var(--texte-discret); }
@@ -356,38 +400,36 @@ footer { display: flex; justify-content: space-between; gap: var(--e2); margin-t
 .infobulle[hidden] { display: none; }
 .infobulle span { color: var(--texte-discret); }
 .infobulle strong { font-weight: 400; }
-.donnees { margin-top: var(--e2); }
-.donnees summary { cursor: pointer; }
-.donnees table { margin-top: var(--e1); border-collapse: collapse; font: 400 var(--t-petit)/1.6 var(--mono); }
-.donnees th, .donnees td { padding: 0 var(--e3) 0 0; text-align: left; font-weight: 400; }
+.donnees { margin-top: 12px; }
+.donnees summary { min-height: 44px; display: flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; }
+.donnees summary::-webkit-details-marker { display: none; }
+.donnees summary::before { content: '[+]'; }
+.donnees[open] summary::before { content: '[−]'; }
+.donnees table { border-collapse: collapse; font: 400 var(--t-petit)/1.7 var(--mono); }
+.donnees th, .donnees td { padding: 0 24px 0 0; text-align: left; font-weight: 400; }
 .donnees th { color: var(--texte-discret); }
 
-.vitals { list-style: none; display: flex; flex-direction: column; border-top: 1px solid var(--trait); margin-top: var(--e3); }
-.vital {
-  display: grid; grid-template-columns: minmax(0, 1fr) auto 128px; grid-template-areas: "nom valeur note" "detail detail detail";
-  align-items: baseline; column-gap: var(--e3); row-gap: 2px; padding: var(--e2) 0; border-bottom: 1px solid var(--trait);
-}
-.vital-nom { grid-area: nom; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px var(--e2); }
-.vital-nom strong { font: 400 var(--t-petit)/1.25 var(--mono); letter-spacing: var(--mono-ls); }
-.vital-valeur { grid-area: valeur; font: 400 var(--t-titre-s)/1.1 var(--serif); letter-spacing: -.01em; text-align: right; }
-.vital-detail { grid-area: detail; }
-.note { grid-area: note; justify-self: end; font: 400 var(--t-petit)/1 var(--mono); letter-spacing: var(--mono-ls); color: var(--texte-discret); }
-.note[class*="note-"] { padding: 5px 7px; color: var(--texte); }
-.note-good { background: rgba(12, 163, 12, .14); }
-.note-needs-improvement { background: rgba(250, 178, 25, .22); }
-.note-poor { background: rgba(208, 59, 59, .14); }
+.tb-pied { display: flex; flex-direction: column; gap: 6px; padding-top: 16px; border-top: 1px solid var(--trait); margin-top: 0; }
 
-.compteur-bloc { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e3); margin-top: var(--e3); }
-.valeur-geante { min-width: 2ch; font: 400 calc(var(--t-display) * 1.6)/1 var(--serif); letter-spacing: var(--serre); font-variant-numeric: tabular-nums; }
-.page-tableau code { font: 400 .85em var(--mono); }
-
-@media (max-width: 1023px) { .tuiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 640px) {
-  .page-tableau section { padding-top: var(--e7); }
-  .tuiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e3); }
-  .tuiles li { flex-direction: column; }
-  .vital { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "nom valeur" "note detail"; row-gap: 6px; }
-  .note { justify-self: start; }
-  .vital-detail { text-align: right; }
-  .direct { margin-top: var(--e7); }
+/* Tablette */
+@media (min-width: 640px) {
+  main.tb { gap: 48px; padding-inline: 24px; padding-top: 24px; }
+  .tb-cles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .carte { min-height: 148px; padding: 16px; }
+  .carte-valeur { font-size: 52px; }
+  .vital-carte { padding: 16px; }
+  .vital-carte .vital-valeur { font-size: 30px; }
 }
+/* Grand écran : Web Vitals et visites côte à côte */
+@media (min-width: 1024px) {
+  main.tb { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 36px; row-gap: 56px; padding: 36px; }
+  .tb-entete, .tb-cles, .tb-pied { grid-column: 1 / -1; }
+  main.tb > .tb-bloc { grid-column: auto; }
+  .tb-entete .titre { font-size: var(--t-display); }
+  .carte { min-height: 176px; padding: 20px; }
+  .carte-valeur { font-size: 64px; }
+  .tb-pied { flex-direction: row; justify-content: space-between; gap: 36px; }
+  .tb-pied [data-depuis] { white-space: nowrap; }
+}
+
+@media (max-width: 640px) { .direct { margin-top: var(--e7); } }
